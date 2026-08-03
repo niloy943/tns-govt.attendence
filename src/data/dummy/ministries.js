@@ -9,7 +9,6 @@ export const dummyMinistries = [
     employeeCount: 45,
     headOfOffice: { id: 11, name: "Ms. Farzana Sharmin, MP", title: "Hon'ble State Minister" },
     status: "active",
-    budgetAllocated: "BDT 450 Crore",
     contactEmail: "state.min@msw.gov.bd",
     contactPhone: "+880 255100568"
   },
@@ -23,7 +22,6 @@ export const dummyMinistries = [
     employeeCount: 38,
     headOfOffice: { id: 22, name: "Shaila Sharmin Zaman", title: "Secretary" },
     status: "active",
-    budgetAllocated: "BDT 380 Crore",
     contactEmail: "info@mowca.gov.bd",
     contactPhone: "+880 241033213"
   },
@@ -37,7 +35,6 @@ export const dummyMinistries = [
     employeeCount: 62,
     headOfOffice: { id: 33, name: "Md. Mokammel Hossain", title: "Senior Secretary" },
     status: "active",
-    budgetAllocated: "BDT 850 Crore",
     contactEmail: "info@mopa.gov.bd",
     contactPhone: "+880 29514001"
   },
@@ -51,7 +48,6 @@ export const dummyMinistries = [
     employeeCount: 75,
     headOfOffice: { id: 44, name: "Dr. Khairuzzaman Mozumder", title: "Finance Secretary" },
     status: "active",
-    budgetAllocated: "BDT 1200 Crore",
     contactEmail: "info@mof.gov.bd",
     contactPhone: "+880 29512201"
   },
@@ -65,7 +61,6 @@ export const dummyMinistries = [
     employeeCount: 52,
     headOfOffice: { id: 55, name: "Md. Shamsul Arefin", title: "Secretary" },
     status: "active",
-    budgetAllocated: "BDT 620 Crore",
     contactEmail: "info@ictd.gov.bd",
     contactPhone: "+880 28181398"
   }

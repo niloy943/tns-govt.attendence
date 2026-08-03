@@ -12,7 +12,8 @@ import {
   ShieldAlert,
   ChevronRight,
   Landmark,
-  Building
+  Building,
+  Banknote
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { dummyMinistries } from '../../data/dummy/ministries';
@@ -98,6 +99,7 @@ export default function Sidebar() {
           ]
         },
         { to: "/overtime", label: "Overtime Duty", icon: Clock },
+        { to: "/salary", label: "Salary Module", icon: Banknote },
         { to: "/settings", label: "Settings & Control", icon: SettingsIcon },
         { to: "/reports", label: "Government Reports", icon: BarChart3 },
       ]

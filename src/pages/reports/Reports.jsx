@@ -5,7 +5,7 @@ export default function Reports() {
   const reportTemplates = [
     { title: "Ministry Attendance Compliance Audit", desc: "Detailed biometric logs grouped by divisional directorate.", format: "PDF / Excel" },
     { title: "Rotational & Medical Leave Summary", desc: "Category-wise breakdown of approved leaves and medical certificates.", format: "PDF / Excel" },
-    { title: "Government Personnel Headcount & Budget", desc: "Ministry staff distribution and monthly salary budget allocations.", format: "PDF" },
+    { title: "Government Personnel Headcount Summary", desc: "Ministry staff distribution and monthly roster allocations.", format: "PDF" },
     { title: "Monthly Overtime Duty Clearance", desc: "Summary of authorized extra hours for payroll processing.", format: "Excel" }
   ];
 

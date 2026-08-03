@@ -12,7 +12,6 @@ export default function MinistryForm({ isOpen, onClose, initialData = null }) {
     employeeCount: 0,
     headOfOfficeName: '',
     headOfOfficeTitle: 'Director',
-    budgetAllocated: '৳ 50 Crore',
     contactEmail: '',
     contactPhone: '',
     status: 'active'
@@ -32,7 +31,6 @@ export default function MinistryForm({ isOpen, onClose, initialData = null }) {
         employeeCount: initialData.employeeCount || 0,
         headOfOfficeName: initialData.headOfOffice?.name || '',
         headOfOfficeTitle: initialData.headOfOffice?.title || 'Director',
-        budgetAllocated: initialData.budgetAllocated || '৳ 50 Crore',
         contactEmail: initialData.contactEmail || '',
         contactPhone: initialData.contactPhone || '',
         status: initialData.status || 'active'
@@ -47,7 +45,6 @@ export default function MinistryForm({ isOpen, onClose, initialData = null }) {
         employeeCount: 0,
         headOfOfficeName: '',
         headOfOfficeTitle: 'Director',
-        budgetAllocated: '৳ 50 Crore',
         contactEmail: '',
         contactPhone: '',
         status: 'active'
@@ -159,23 +156,14 @@ export default function MinistryForm({ isOpen, onClose, initialData = null }) {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
-              <label className="form-label">City / Division</label>
+              <label className="form-label">City / Region *</label>
               <input
                 type="text"
+                required
                 className="form-input"
                 placeholder="e.g. Dhaka, Chittagong, Sylhet"
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-              />
-            </div>
-            <div>
-              <label className="form-label">Annual Budget</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="e.g. ৳ 150 Crore"
-                value={formData.budgetAllocated}
-                onChange={(e) => setFormData({ ...formData, budgetAllocated: e.target.value })}
               />
             </div>
           </div>

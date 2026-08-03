@@ -15,6 +15,7 @@ import Leave from './pages/leave/Leave';
 import Overtime from './pages/overtime/Overtime';
 import Reports from './pages/reports/Reports';
 import Settings from './pages/settings/Settings';
+import Salary from './pages/salary/Salary';
 
 export default function App() {
   return (
@@ -43,6 +44,9 @@ export default function App() {
         
         {/* Overtime */}
         <Route path="/overtime" element={<Overtime />} />
+
+        {/* Salary Module */}
+        <Route path="/salary" element={<Salary />} />
         
         {/* Reports */}
         <Route path="/reports" element={<Reports />} />

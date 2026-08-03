@@ -13,7 +13,6 @@ export async function fetchMinistries() {
     employeeCount: item.employeeCount ?? item.employee_count ?? 0,
     headOfOffice: item.headOfOffice || item.head_of_office || null,
     status: item.status || 'active',
-    budgetAllocated: item.budgetAllocated || item.budget_allocated || 'N/A',
     contactEmail: item.contactEmail || item.contact_email,
     contactPhone: item.contactPhone || item.contact_phone
   }));

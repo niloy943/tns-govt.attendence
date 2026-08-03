@@ -14,11 +14,14 @@ import {
   Award,
   Filter,
   Layers,
-  Sparkles
+  Sparkles,
+  ExternalLink,
+  ArrowLeft
 } from 'lucide-react';
 import { useEmployees } from '../../hooks/useEmployees';
 import { useAuth } from '../../context/AuthContext';
 import { dummyMinistries } from '../../data/dummy/ministries';
+import GovtLogo from '../../components/layout/GovtLogo';
 
 export default function EmployeeChart() {
   const { data: employees, isLoading } = useEmployees();
@@ -37,6 +40,12 @@ export default function EmployeeChart() {
 
   const handleMinistryChange = (e) => {
     const val = e.target.value;
+    setActiveMinistryId(val);
+    setSelectedMinistryId(val);
+  };
+
+  const handleFocusMinistry = (ministryId) => {
+    const val = String(ministryId);
     setActiveMinistryId(val);
     setSelectedMinistryId(val);
   };
@@ -135,52 +144,77 @@ export default function EmployeeChart() {
             </h1>
             <p style={{ fontSize: '0.8125rem', color: '#E0E7FF', margin: 0, marginTop: '0.125rem' }}>
               {activeMinistryId === "all" 
-                ? "Showing separated, distinct organogram pitches for all ministries under central governance" 
+                ? "Click any ministry branch below to view its dedicated, separate organogram chart" 
                 : "Displaying reporting structure and command hierarchy for selected ministry"}
             </p>
           </div>
         </div>
 
-        {/* View Mode Switcher */}
-        <div style={{ display: 'flex', backgroundColor: 'rgba(0, 0, 0, 0.25)', padding: '0.25rem', borderRadius: '0.5rem' }}>
-          <button
-            onClick={() => setViewMode("tree")}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.375rem',
-              padding: '0.4rem 0.875rem',
-              borderRadius: '0.375rem',
-              fontSize: '0.8125rem',
-              fontWeight: 700,
-              border: 'none',
-              cursor: 'pointer',
-              backgroundColor: viewMode === "tree" ? "#FFFFFF" : "transparent",
-              color: viewMode === "tree" ? "#4F46E5" : "#FFFFFF",
-              transition: 'all 0.2s ease'
-            }}
-          >
-            <Network size={16} /> Tree Organogram
-          </button>
-          <button
-            onClick={() => setViewMode("grid")}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.375rem',
-              padding: '0.4rem 0.875rem',
-              borderRadius: '0.375rem',
-              fontSize: '0.8125rem',
-              fontWeight: 700,
-              border: 'none',
-              cursor: 'pointer',
-              backgroundColor: viewMode === "grid" ? "#FFFFFF" : "transparent",
-              color: viewMode === "grid" ? "#4F46E5" : "#FFFFFF",
-              transition: 'all 0.2s ease'
-            }}
-          >
-            <Grid size={16} /> Department Grid
-          </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          {/* Back to Central View Button */}
+          {activeMinistryId !== "all" && (
+            <button
+              onClick={() => handleFocusMinistry("all")}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.375rem',
+                padding: '0.4rem 0.875rem',
+                borderRadius: '0.375rem',
+                fontSize: '0.8125rem',
+                fontWeight: 700,
+                border: 'none',
+                cursor: 'pointer',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                color: '#FFFFFF',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <ArrowLeft size={16} /> Back to Central View
+            </button>
+          )}
+
+          {/* View Mode Switcher */}
+          <div style={{ display: 'flex', backgroundColor: 'rgba(0, 0, 0, 0.25)', padding: '0.25rem', borderRadius: '0.5rem' }}>
+            <button
+              onClick={() => setViewMode("tree")}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.375rem',
+                padding: '0.4rem 0.875rem',
+                borderRadius: '0.375rem',
+                fontSize: '0.8125rem',
+                fontWeight: 700,
+                border: 'none',
+                cursor: 'pointer',
+                backgroundColor: viewMode === "tree" ? "#FFFFFF" : "transparent",
+                color: viewMode === "tree" ? "#4F46E5" : "#FFFFFF",
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <Network size={16} /> Tree Organogram
+            </button>
+            <button
+              onClick={() => setViewMode("grid")}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.375rem',
+                padding: '0.4rem 0.875rem',
+                borderRadius: '0.375rem',
+                fontSize: '0.8125rem',
+                fontWeight: 700,
+                border: 'none',
+                cursor: 'pointer',
+                backgroundColor: viewMode === "grid" ? "#FFFFFF" : "transparent",
+                color: viewMode === "grid" ? "#4F46E5" : "#FFFFFF",
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <Grid size={16} /> Department Grid
+            </button>
+          </div>
         </div>
       </div>
 
@@ -253,7 +287,7 @@ export default function EmployeeChart() {
           </button>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '100%' }}>
           {employeesByMinistry.map(({ ministry, list }) => (
             <MinistryOrganogramPitch
               key={ministry.id}
@@ -261,6 +295,7 @@ export default function EmployeeChart() {
               employees={list}
               viewMode={viewMode}
               onSelectEmployee={setSelectedEmployee}
+              onFocusMinistry={handleFocusMinistry}
               isCentralMode={activeMinistryId === "all"}
             />
           ))}
@@ -379,10 +414,9 @@ export default function EmployeeChart() {
 }
 
 // Single Ministry Pitch Organogram Container
-function MinistryOrganogramPitch({ ministry, employees, viewMode, onSelectEmployee, isCentralMode }) {
+function MinistryOrganogramPitch({ ministry, employees, viewMode, onSelectEmployee, onFocusMinistry, isCentralMode }) {
   // Find Root Top Executive Node(s)
   const rootNodes = useMemo(() => {
-    // Find nodes where reportsTo is null or not in this employee list
     const ids = new Set(employees.map(e => e.id));
     return employees.filter(e => e.reportsTo === null || !ids.has(e.reportsTo) || e.level === 'ceo');
   }, [employees]);
@@ -399,7 +433,16 @@ function MinistryOrganogramPitch({ ministry, employees, viewMode, onSelectEmploy
         paddingBottom: '0.875rem',
         marginBottom: '1.75rem'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div 
+          onClick={() => isCentralMode && onFocusMinistry(ministry.id)}
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '0.75rem',
+            cursor: isCentralMode ? 'pointer' : 'default'
+          }}
+          title={isCentralMode ? "Click to open separate organogram chart for this ministry" : ""}
+        >
           <div style={{
             backgroundColor: isCentralMode ? '#EEF2FF' : '#F0FDF4',
             color: isCentralMode ? '#4F46E5' : '#166534',
@@ -410,8 +453,9 @@ function MinistryOrganogramPitch({ ministry, employees, viewMode, onSelectEmploy
             <Building2 size={22} />
           </div>
           <div>
-            <h2 style={{ fontSize: '1.125rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
+            <h2 style={{ fontSize: '1.125rem', fontWeight: 800, color: '#0F172A', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               {ministry.name}
+              {isCentralMode && <ExternalLink size={16} style={{ color: '#4F46E5' }} />}
             </h2>
             <p style={{ fontSize: '0.75rem', color: '#64748B', margin: 0, marginTop: '0.125rem' }}>
               {ministry.city || "Bangladesh Secretariat, Dhaka"} • {employees.length} Active Officers
@@ -419,23 +463,43 @@ function MinistryOrganogramPitch({ ministry, employees, viewMode, onSelectEmploy
           </div>
         </div>
 
-        {isCentralMode && (
+        {isCentralMode ? (
+          <button
+            onClick={() => onFocusMinistry(ministry.id)}
+            style={{
+              fontSize: '0.75rem',
+              fontWeight: 800,
+              color: '#4F46E5',
+              backgroundColor: '#EEF2FF',
+              padding: '0.375rem 0.875rem',
+              borderRadius: '0.5rem',
+              border: '1px solid #C7D2FE',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.375rem',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <ExternalLink size={14} /> View Separate Organogram →
+          </button>
+        ) : (
           <span style={{
             fontSize: '0.7rem',
             fontWeight: 800,
-            color: '#4338CA',
-            backgroundColor: '#EEF2FF',
+            color: '#047857',
+            backgroundColor: '#ECFDF5',
             padding: '0.25rem 0.75rem',
             borderRadius: '9999px',
-            border: '1px solid #C7D2FE'
+            border: '1px solid #A7F3D0'
           }}>
-            MINISTRY BRANCH PITCH
+            INDIVIDUAL MINISTRY VIEW
           </span>
         )}
       </div>
 
       {viewMode === "tree" ? (
-        /* TREE BRANCH RENDERING WITH HIGH-CONTRAST VISIBLE CONNECTORS */
+        /* CLEAN TREE ORGANOGRAM PITCH */
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', minWidth: '650px', padding: '1rem 0' }}>
           {rootNodes.map(root => (
             <TreeNodeBranch 
@@ -490,7 +554,7 @@ function MinistryOrganogramPitch({ ministry, employees, viewMode, onSelectEmploy
   );
 }
 
-// Recursive Tree Node Renderer with Bold, Crystal-Clear Parent-to-Child Connectors
+// Recursive Tree Node Renderer featuring mathematically perfect parent-to-child connector lines
 function TreeNodeBranch({ node, allEmployees, onSelectEmployee, isRoot }) {
   // Find direct child subordinates reporting to this node
   const children = useMemo(() => {
@@ -517,18 +581,20 @@ function TreeNodeBranch({ node, allEmployees, onSelectEmployee, isRoot }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
       
-      {/* Node Card */}
+      {/* Node Card - Fixed 250px Width for Perfect Mathematical Line Alignment */}
       <div
         onClick={() => onSelectEmployee(node)}
         className="hover-card-elevation"
         style={{
           border: `2.5px solid ${styleConfig.borderColor}`,
           borderRadius: '1rem',
-          padding: isRoot ? '1.25rem 1.75rem' : '1rem 1.25rem',
+          padding: '1rem 1.25rem',
           backgroundColor: '#FFFFFF',
           textAlign: 'center',
-          minWidth: isRoot ? '240px' : '220px',
-          maxWidth: '280px',
+          width: '250px',
+          minWidth: '250px',
+          maxWidth: '250px',
+          boxSizing: 'border-box',
           cursor: 'pointer',
           boxShadow: '0 6px 16px rgba(0, 0, 0, 0.06)',
           zIndex: 2,
@@ -560,12 +626,12 @@ function TreeNodeBranch({ node, allEmployees, onSelectEmployee, isRoot }) {
           }} />
         </div>
 
-        <h4 style={{ fontSize: isRoot ? '1rem' : '0.875rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
+        <h4 style={{ fontSize: isRoot ? '0.9375rem' : '0.875rem', fontWeight: 800, color: '#0F172A', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {node.name}
         </h4>
 
         <p style={{
-          fontSize: '0.675rem',
+          fontSize: '0.65rem',
           fontWeight: 800,
           color: styleConfig.roleColor,
           textTransform: 'uppercase',
@@ -576,12 +642,16 @@ function TreeNodeBranch({ node, allEmployees, onSelectEmployee, isRoot }) {
           borderRadius: '0.375rem',
           display: 'inline-block',
           letterSpacing: '0.02em',
-          lineHeight: '1.3'
+          lineHeight: '1.3',
+          maxWidth: '100%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap'
         }}>
           {node.designation}
         </p>
 
-        <p style={{ fontSize: '0.65rem', color: '#64748B', margin: 0, fontWeight: 500 }}>
+        <p style={{ fontSize: '0.65rem', color: '#64748B', margin: 0, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {node.department}
         </p>
       </div>
@@ -593,7 +663,7 @@ function TreeNodeBranch({ node, allEmployees, onSelectEmployee, isRoot }) {
           {/* Vertical Stem dropping down from parent node */}
           <div style={{
             width: '3px',
-            height: '28px',
+            height: '24px',
             backgroundColor: '#4F46E5',
             position: 'relative'
           }}>
@@ -616,37 +686,55 @@ function TreeNodeBranch({ node, allEmployees, onSelectEmployee, isRoot }) {
             display: 'flex',
             gap: '2rem',
             position: 'relative',
-            paddingTop: '16px'
+            marginTop: 0
           }}>
-            {/* Horizontal Bridge Line linking all children */}
+            {/* SINGLE CONTINUOUS UNBROKEN HORIZONTAL BRIDGE LINE */}
             {children.length > 1 && (
               <div style={{
                 position: 'absolute',
                 top: 0,
-                left: '110px',
-                right: '110px',
+                left: '125px', // Exact center of first 250px child card!
+                right: '125px', // Exact center of last 250px child card!
                 height: '3px',
-                backgroundColor: '#4F46E5'
+                backgroundColor: '#4F46E5',
+                zIndex: 2
               }} />
             )}
 
             {/* Render Each Subordinate Child Branch */}
-            {children.map(child => (
-              <div key={child.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-                {/* Vertical Drop Line connecting horizontal bridge to child node */}
+            {children.map((child) => (
+              <div 
+                key={child.id} 
+                style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center', 
+                  position: 'relative',
+                  width: '250px',
+                  minWidth: '250px',
+                  maxWidth: '250px'
+                }}
+              >
+                {/* Vertical Drop Line connecting horizontal bridge into top center of child node */}
                 <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
                   width: '3px',
-                  height: '16px',
+                  height: '20px',
                   backgroundColor: '#4F46E5',
-                  marginBottom: '2px'
+                  zIndex: 1
                 }} />
-                
-                <TreeNodeBranch 
-                  node={child} 
-                  allEmployees={allEmployees} 
-                  onSelectEmployee={onSelectEmployee}
-                  isRoot={false}
-                />
+
+                <div style={{ paddingTop: '20px', width: '100%', display: 'flex', justifyContent: 'center' }}>
+                  <TreeNodeBranch 
+                    node={child} 
+                    allEmployees={allEmployees} 
+                    onSelectEmployee={onSelectEmployee}
+                    isRoot={false}
+                  />
+                </div>
               </div>
             ))}
           </div>

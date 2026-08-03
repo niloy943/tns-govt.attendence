@@ -190,7 +190,6 @@ export default function Dashboard() {
                     <th style={{ padding: '0.75rem 1rem' }}>Code</th>
                     <th style={{ padding: '0.75rem 1rem' }}>Head of Office</th>
                     <th style={{ padding: '0.75rem 1rem' }}>Officers</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Budget</th>
                     <th style={{ padding: '0.75rem 1rem' }}>Attendance Rate</th>
                     <th style={{ padding: '0.75rem 1rem' }}>Action</th>
                   </tr>
@@ -202,7 +201,6 @@ export default function Dashboard() {
                       <td style={{ padding: '0.875rem 1rem', color: '#64748B' }}>{m.code}</td>
                       <td style={{ padding: '0.875rem 1rem' }}>{m.headOfOffice.name}</td>
                       <td style={{ padding: '0.875rem 1rem', fontWeight: 600 }}>{m.employeeCount}</td>
-                      <td style={{ padding: '0.875rem 1rem', color: '#059669', fontWeight: 600 }}>{m.budgetAllocated}</td>
                       <td style={{ padding: '0.875rem 1rem' }}>
                         <span style={{ backgroundColor: '#DCFCE7', color: '#15803D', padding: '0.2rem 0.5rem', borderRadius: '0.375rem', fontWeight: 700, fontSize: '0.75rem' }}>
                           88.5% Present

@@ -13,6 +13,8 @@ export const dummyEmployees = [
     status: "active",
     level: "ceo",
     reportsTo: null,
+    monthlySalary: 78000,
+    payGrade: "Grade-1",
     avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -29,6 +31,8 @@ export const dummyEmployees = [
     status: "active",
     level: "vp",
     reportsTo: 1,
+    monthlySalary: 66000,
+    payGrade: "Grade-3",
     avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -45,6 +49,8 @@ export const dummyEmployees = [
     status: "active",
     level: "director",
     reportsTo: 1,
+    monthlySalary: 66000,
+    payGrade: "Grade-3",
     avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -61,6 +67,8 @@ export const dummyEmployees = [
     status: "active",
     level: "manager",
     reportsTo: 2,
+    monthlySalary: 50000,
+    payGrade: "Grade-5",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -77,6 +85,8 @@ export const dummyEmployees = [
     status: "active",
     level: "manager",
     reportsTo: 2,
+    monthlySalary: 50000,
+    payGrade: "Grade-5",
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -93,6 +103,8 @@ export const dummyEmployees = [
     status: "active",
     level: "manager",
     reportsTo: 3,
+    monthlySalary: 50000,
+    payGrade: "Grade-5",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -109,6 +121,8 @@ export const dummyEmployees = [
     status: "active",
     level: "manager",
     reportsTo: 3,
+    monthlySalary: 50000,
+    payGrade: "Grade-5",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -125,6 +139,8 @@ export const dummyEmployees = [
     status: "active",
     level: "asst_manager",
     reportsTo: 6,
+    monthlySalary: 35500,
+    payGrade: "Grade-9",
     avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -141,6 +157,8 @@ export const dummyEmployees = [
     status: "active",
     level: "asst_manager",
     reportsTo: 4,
+    monthlySalary: 35500,
+    payGrade: "Grade-9",
     avatar: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -157,6 +175,8 @@ export const dummyEmployees = [
     status: "active",
     level: "asst_manager",
     reportsTo: 4,
+    monthlySalary: 35500,
+    payGrade: "Grade-9",
     avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -173,6 +193,8 @@ export const dummyEmployees = [
     status: "active",
     level: "ceo",
     reportsTo: null,
+    monthlySalary: 78000,
+    payGrade: "Grade-1",
     avatar: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -189,6 +211,8 @@ export const dummyEmployees = [
     status: "active",
     level: "director",
     reportsTo: 11,
+    monthlySalary: 66000,
+    payGrade: "Grade-3",
     avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -205,6 +229,8 @@ export const dummyEmployees = [
     status: "active",
     level: "director",
     reportsTo: 11,
+    monthlySalary: 66000,
+    payGrade: "Grade-3",
     avatar: "https://images.unsplash.com/photo-1521119989659-a83eee488004?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -221,6 +247,8 @@ export const dummyEmployees = [
     status: "active",
     level: "manager",
     reportsTo: 12,
+    monthlySalary: 50000,
+    payGrade: "Grade-5",
     avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -237,6 +265,8 @@ export const dummyEmployees = [
     status: "active",
     level: "manager",
     reportsTo: 17,
+    monthlySalary: 50000,
+    payGrade: "Grade-5",
     avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -253,6 +283,8 @@ export const dummyEmployees = [
     status: "active",
     level: "staff",
     reportsTo: 13,
+    monthlySalary: 22000,
+    payGrade: "Grade-13",
     avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -269,6 +301,8 @@ export const dummyEmployees = [
     status: "active",
     level: "staff",
     reportsTo: 13,
+    monthlySalary: 22000,
+    payGrade: "Grade-13",
     avatar: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -285,6 +319,8 @@ export const dummyEmployees = [
     status: "active",
     level: "staff",
     reportsTo: 18,
+    monthlySalary: 22000,
+    payGrade: "Grade-13",
     avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80"
   },
   {
@@ -301,6 +337,8 @@ export const dummyEmployees = [
     status: "active",
     level: "staff",
     reportsTo: 18,
+    monthlySalary: 22000,
+    payGrade: "Grade-13",
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
   }
 ];

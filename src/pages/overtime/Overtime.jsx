@@ -4,7 +4,7 @@ import StatusBadge from '../../components/shared/StatusBadge';
 
 export default function Overtime() {
   const [otList, setOtList] = useState([
-    { id: 1, officer: "Farhana Yasmin", ministry: "Department of Social Services - Dhaka", date: "2026-08-01", hours: "2h 30m", task: "Budget compilation for parliamentary session", status: "approved" },
+    { id: 1, officer: "Farhana Yasmin", ministry: "Department of Social Services - Dhaka", date: "2026-08-01", hours: "2h 30m", task: "Annual report compilation for parliamentary session", status: "approved" },
     { id: 2, officer: "Anisur Rahman", ministry: "Ministry of Social Welfare", date: "2026-08-01", hours: "1h 45m", task: "Emergency relief distribution report preparation", status: "pending" },
     { id: 3, officer: "Tanvir Ahmed", ministry: "Ministry of Women and Children Affairs", date: "2026-07-30", hours: "3h 00m", task: "Special project audit file closing", status: "approved" }
   ]);
