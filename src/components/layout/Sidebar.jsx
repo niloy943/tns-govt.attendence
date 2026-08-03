@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Building2, 
@@ -19,6 +19,7 @@ import { dummyMinistries } from '../../data/dummy/ministries';
 import GovtLogo from './GovtLogo';
 
 export default function Sidebar() {
+  const location = useLocation();
   const { 
     currentUser, 
     viewLevel, 
@@ -32,27 +33,46 @@ export default function Sidebar() {
     ? dummyMinistries.find(m => m.id === Number(selectedMinistryId))
     : null;
 
-  const headerSubtitle = selectedMinistryObj ? selectedMinistryObj.name : "Ministry";
+  const headerSubtitle = selectedMinistryObj ? selectedMinistryObj.name : "Central Secretariat";
+
+  // Explicitly separate active states for Central vs Ministry Dashboard on route '/'
+  const isCentralActive = location.pathname === '/' && (viewLevel === 'central' || selectedMinistryId === 'all');
+  const isMinistryActive = location.pathname === '/' && viewLevel === 'ministry' && selectedMinistryId !== 'all';
 
   const navSections = [
     {
-      level: "Central",
-      subtitle: "",
+      level: "Central Operations",
+      subtitle: "Government-wide Level",
       icon: Landmark,
       items: [
-        { to: "/", label: "Central Dashboard", icon: LayoutDashboard, onClick: setCentralView },
-        { to: "/ministry", label: "All Ministry", icon: Building2 },
+        { 
+          to: "/", 
+          label: "Central Dashboard", 
+          icon: LayoutDashboard, 
+          isCustomActive: isCentralActive,
+          onClick: () => setCentralView() 
+        },
+        { to: "/ministry", label: "All Ministries", icon: Building2 },
         { to: "/reports", label: "Government Reports", icon: BarChart3 },
       ]
     },
     {
-      level: "Ministry",
-      subtitle: "",
+      level: "Ministry Operations",
+      subtitle: "Selected Ministry Level",
       icon: Building,
       items: [
-        { to: "/", label: "Ministry Dashboard", icon: LayoutDashboard, onClick: () => setMinistryView(selectedMinistryId === 'all' ? 1 : selectedMinistryId) },
+        { 
+          to: "/", 
+          label: "Ministry Dashboard", 
+          icon: LayoutDashboard, 
+          isCustomActive: isMinistryActive,
+          onClick: () => {
+            const targetId = (selectedMinistryId === 'all' || !selectedMinistryId) ? (currentUser.ministryId || 1) : selectedMinistryId;
+            setMinistryView(targetId);
+          }
+        },
         {
-          label: "Employee",
+          label: "Employee Management",
           icon: Users,
           children: [
             { to: "/employee/create", label: "Create Employee" },
@@ -72,7 +92,7 @@ export default function Sidebar() {
         },
         { to: "/leave", label: "Leave Requests", icon: FileText },
         { to: "/overtime", label: "Overtime Duty", icon: Clock },
-        { to: "/settings", label: "System Settings", icon: SettingsIcon },
+        { to: "/settings", label: "Settings & Control", icon: SettingsIcon },
       ]
     }
   ];
@@ -90,7 +110,7 @@ export default function Sidebar() {
       position: 'sticky',
       top: 0
     }}>
-      {/* 1. FIXED (STICKY) BRAND HEADER WITH DYNAMIC SUBTITLE */}
+      {/* 1. FIXED BRAND HEADER WITH DYNAMIC SUBTITLE */}
       <div style={{
         padding: '1.25rem 1.5rem',
         borderBottom: '1px solid #1E293B',
@@ -107,10 +127,10 @@ export default function Sidebar() {
           <h1 style={{ fontSize: '0.8125rem', fontWeight: 700, lineHeight: 1.2, color: '#F8FAFC' }}>
             Government of Bangladesh
           </h1>
-          {/* Subtitle displays the selected ministry's name dynamically */}
+          {/* Subtitle displays selected ministry or Central Secretariat */}
           <p style={{
             fontSize: '0.725rem',
-            color: '#60A5FA',
+            color: selectedMinistryObj ? '#60A5FA' : '#38BDF8',
             fontWeight: 600,
             marginTop: '0.2rem',
             whiteSpace: 'nowrap',
@@ -142,7 +162,7 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* 2. SCROLLABLE NAVIGATION CONTENT (Central -> Ministry) */}
+      {/* 2. SCROLLABLE NAVIGATION CONTENT */}
       <nav style={{ padding: '0.75rem 1rem', flex: 1, overflowY: 'auto' }}>
         {navSections.map((section, sIdx) => {
           const SectionIcon = section.icon;
@@ -214,12 +234,17 @@ export default function Sidebar() {
                     );
                   }
 
+                  // Determine active state cleanly
+                  const isItemActive = item.isCustomActive !== undefined 
+                    ? item.isCustomActive 
+                    : location.pathname === item.to;
+
                   return (
                     <li key={index} style={{ marginBottom: '0.25rem' }}>
                       <NavLink
                         to={item.to}
                         onClick={item.onClick}
-                        style={({ isActive }) => ({
+                        style={{
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
@@ -227,11 +252,11 @@ export default function Sidebar() {
                           borderRadius: '0.375rem',
                           fontSize: '0.8125rem',
                           textDecoration: 'none',
-                          color: isActive ? '#FFFFFF' : '#CBD5E1',
-                          backgroundColor: isActive ? 'var(--primary)' : 'transparent',
-                          fontWeight: isActive ? 600 : 500,
+                          color: isItemActive ? '#FFFFFF' : '#CBD5E1',
+                          backgroundColor: isItemActive ? 'var(--primary)' : 'transparent',
+                          fontWeight: isItemActive ? 600 : 500,
                           transition: 'all 0.15s ease-in-out'
-                        })}
+                        }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                           <Icon size={16} />

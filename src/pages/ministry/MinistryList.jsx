@@ -127,16 +127,6 @@ export default function MinistryList() {
             <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--slate-text)' }}>{totalEmployees}</h3>
           </div>
         </div>
-
-        <div className="card-base" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ padding: '0.75rem', borderRadius: '0.5rem', backgroundColor: 'var(--indigo-light)', color: '#4338CA' }}>
-            <BadgeDollarSign size={24} />
-          </div>
-          <div>
-            <p style={{ fontSize: '0.75rem', color: 'var(--slate-muted)', fontWeight: 600, textTransform: 'uppercase' }}>Govt Budget Pool</p>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--slate-text)' }}>৳ 1,050 Cr</h3>
-          </div>
-        </div>
       </div>
 
       {/* Filter and Search Bar */}

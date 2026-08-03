@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings as SettingsIcon, Save, Database, ShieldCheck, Clock } from 'lucide-react';
+import { Settings as SettingsIcon, Save } from 'lucide-react';
 import { useSettings, useUpdateSettings } from '../../hooks/useSettings';
 
 export default function Settings() {
@@ -23,30 +23,13 @@ export default function Settings() {
     });
   };
 
-  const isUseDummy = import.meta.env.VITE_USE_DUMMY_DATA === "true";
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '48rem' }} className="animate-fade-in">
       <div>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>System Settings & Data Source Controls</h1>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 700 }}>Settings & Control</h1>
         <p style={{ fontSize: '0.875rem', color: 'var(--slate-muted)' }}>
-          Configure working hours, leave quotas, and inspect the current REST API data source toggle state.
+          Time Schedule
         </p>
-      </div>
-
-      {/* Data Source Mode Indicator */}
-      <div className="card-base" style={{ padding: '1.25rem', backgroundColor: isUseDummy ? '#EFF6FF' : '#F0FDF4', borderColor: isUseDummy ? '#BFDBFE' : '#BBF7D0' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Database size={22} style={{ color: isUseDummy ? 'var(--primary)' : 'var(--emerald)' }} />
-          <div>
-            <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--slate-text)' }}>
-              Active Data Source: {isUseDummy ? "Isolated Dummy Data Contract (src/data/dummy/)" : "Live REST API Server"}
-            </h3>
-            <p style={{ fontSize: '0.8125rem', color: 'var(--slate-muted)', marginTop: '0.125rem' }}>
-              Environment Flag `VITE_USE_DUMMY_DATA={isUseDummy ? "true" : "false"}`. Standardized endpoints ready in `src/api/endpoints/`.
-            </p>
-          </div>
-        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="card-base" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
