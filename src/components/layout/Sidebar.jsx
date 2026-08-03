@@ -13,6 +13,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import GovtLogo from './GovtLogo';
 
 export default function Sidebar() {
   const { currentUser } = useAuth();
@@ -64,23 +65,10 @@ export default function Sidebar() {
         alignItems: 'center',
         gap: '0.75rem'
       }}>
-        <div style={{
-          width: '2.5rem',
-          height: '2.5rem',
-          borderRadius: '0.5rem',
-          backgroundColor: 'var(--primary)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontWeight: 800,
-          color: '#FFFFFF',
-          fontSize: '1.125rem'
-        }}>
-          GA
-        </div>
+        <GovtLogo style={{ width: '2.5rem', height: '2.5rem' }} />
         <div>
           <h1 style={{ fontSize: '1rem', fontWeight: 700, lineHeight: 1.2 }}>Govt Attendence</h1>
-          <p style={{ fontSize: '0.725rem', color: 'var(--text-sidebar)' }}>Govt Ministry Portal</p>
+          <p style={{ fontSize: '0.725rem', color: 'var(--text-sidebar)' }}>Ministry Portal</p>
         </div>
       </div>
 
