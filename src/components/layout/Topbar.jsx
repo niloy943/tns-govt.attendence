@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Bell, Landmark, Building, Layers } from 'lucide-react';
+import { Search, Bell, Landmark, Building } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { dummyMinistries } from '../../data/dummy/ministries';
 
@@ -9,20 +9,10 @@ export default function Topbar() {
     viewLevel, 
     setCentralView, 
     setMinistryView, 
-    setDepartmentView,
     selectedMinistryId, 
     setSelectedMinistryId,
-    selectedDepartmentId,
-    setSelectedDepartmentId
+    selectMinistry
   } = useAuth();
-
-  const mockDepartments = [
-    { id: 1, name: "HR & Admin" },
-    { id: 2, name: "Finance & Accounts" },
-    { id: 3, name: "Social Welfare Dept" },
-    { id: 4, name: "Women & Child Affairs" },
-    { id: 5, name: "ICT & Digital Infra" }
-  ];
 
   return (
     <header style={{
@@ -37,7 +27,7 @@ export default function Topbar() {
       top: 0,
       zIndex: 10
     }}>
-      {/* 3-TIER LEVEL SWITCHER: Central -> Ministry -> Department */}
+      {/* 2-LEVEL VIEW SWITCHER: Central -> Ministry */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', backgroundColor: '#F1F5F9', padding: '0.25rem', borderRadius: '0.5rem', border: '1px solid #E2E8F0' }}>
         <button
           onClick={setCentralView}
@@ -45,10 +35,10 @@ export default function Topbar() {
             display: 'flex',
             alignItems: 'center',
             gap: '0.375rem',
-            padding: '0.375rem 0.75rem',
+            padding: '0.375rem 0.875rem',
             borderRadius: '0.375rem',
             border: 'none',
-            fontSize: '0.775rem',
+            fontSize: '0.8125rem',
             fontWeight: 600,
             cursor: 'pointer',
             backgroundColor: viewLevel === 'central' ? 'var(--primary)' : 'transparent',
@@ -56,7 +46,7 @@ export default function Topbar() {
             transition: 'all 0.15s ease'
           }}
         >
-          <Landmark size={14} />
+          <Landmark size={15} />
           Central (All Ministries)
         </button>
 
@@ -66,10 +56,10 @@ export default function Topbar() {
             display: 'flex',
             alignItems: 'center',
             gap: '0.375rem',
-            padding: '0.375rem 0.75rem',
+            padding: '0.375rem 0.875rem',
             borderRadius: '0.375rem',
             border: 'none',
-            fontSize: '0.775rem',
+            fontSize: '0.8125rem',
             fontWeight: 600,
             cursor: 'pointer',
             backgroundColor: viewLevel === 'ministry' ? 'var(--primary)' : 'transparent',
@@ -77,63 +67,40 @@ export default function Topbar() {
             transition: 'all 0.15s ease'
           }}
         >
-          <Building size={14} />
-          Ministry
-        </button>
-
-        <button
-          onClick={() => setDepartmentView(selectedDepartmentId === 'all' ? 1 : selectedDepartmentId)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.375rem',
-            padding: '0.375rem 0.75rem',
-            borderRadius: '0.375rem',
-            border: 'none',
-            fontSize: '0.775rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-            backgroundColor: viewLevel === 'department' ? 'var(--primary)' : 'transparent',
-            color: viewLevel === 'department' ? '#FFFFFF' : '#475569',
-            transition: 'all 0.15s ease'
-          }}
-        >
-          <Layers size={14} />
-          Department
+          <Building size={15} />
+          Ministry View
         </button>
       </div>
 
-      {/* Dynamic Dropdowns & Right Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        {viewLevel === 'ministry' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#F8FAFC', padding: '0.375rem 0.75rem', borderRadius: '0.5rem', border: '1px solid #CBD5E1' }}>
-            <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--slate-muted)' }}>Ministry:</label>
-            <select
-              value={selectedMinistryId}
-              onChange={(e) => setSelectedMinistryId(e.target.value)}
-              style={{ border: 'none', backgroundColor: 'transparent', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--slate-text)', outline: 'none', cursor: 'pointer' }}
-            >
-              {dummyMinistries.map((m) => (
-                <option key={m.id} value={m.id}>{m.name}</option>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {viewLevel === 'department' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#F8FAFC', padding: '0.375rem 0.75rem', borderRadius: '0.5rem', border: '1px solid #CBD5E1' }}>
-            <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--slate-muted)' }}>Department:</label>
-            <select
-              value={selectedDepartmentId}
-              onChange={(e) => setSelectedDepartmentId(e.target.value)}
-              style={{ border: 'none', backgroundColor: 'transparent', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--slate-text)', outline: 'none', cursor: 'pointer' }}
-            >
-              {mockDepartments.map((d) => (
-                <option key={d.id} value={d.id}>{d.name}</option>
-              ))}
-            </select>
-          </div>
-        )}
+      {/* Dynamic Ministry Dropdown & Profile */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+        {/* Ministry Dropdown Selector */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#F8FAFC', padding: '0.375rem 0.75rem', borderRadius: '0.5rem', border: '1px solid #CBD5E1' }}>
+          <Building size={16} style={{ color: 'var(--primary)' }} />
+          <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--slate-muted)', whiteSpace: 'nowrap' }}>
+            Select Ministry:
+          </label>
+          <select
+            value={selectedMinistryId}
+            onChange={(e) => selectMinistry(e.target.value)}
+            style={{
+              border: 'none',
+              backgroundColor: 'transparent',
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+              color: 'var(--slate-text)',
+              outline: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            <option value="all">Central Dashboard (All Ministries)</option>
+            {dummyMinistries.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {/* Notifications Icon */}
         <button className="btn btn-ghost" style={{ position: 'relative', padding: '0.5rem' }}>

@@ -38,29 +38,26 @@ export const mockUsers = [
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(mockUsers[0]);
   
-  // 3-tier view state: 'central' | 'ministry' | 'department'
+  // 2-tier view state: 'central' | 'ministry'
   const [viewLevel, setViewLevel] = useState('central');
   const [selectedMinistryId, setSelectedMinistryId] = useState("all");
-  const [selectedDepartmentId, setSelectedDepartmentId] = useState("all");
 
   const setCentralView = () => {
     setViewLevel('central');
     setSelectedMinistryId('all');
-    setSelectedDepartmentId('all');
   };
 
   const setMinistryView = (ministryId) => {
     setViewLevel('ministry');
     setSelectedMinistryId(ministryId || 1);
-    setSelectedDepartmentId('all');
   };
 
-  const setDepartmentView = (departmentId) => {
-    setViewLevel('department');
-    if (selectedMinistryId === 'all') {
-      setSelectedMinistryId(1);
+  const selectMinistry = (ministryId) => {
+    if (ministryId === 'all') {
+      setCentralView();
+    } else {
+      setMinistryView(ministryId);
     }
-    setSelectedDepartmentId(departmentId || 1);
   };
 
   const switchUser = (userId) => {
@@ -88,11 +85,9 @@ export function AuthProvider({ children }) {
       setViewLevel,
       selectedMinistryId,
       setSelectedMinistryId,
-      selectedDepartmentId,
-      setSelectedDepartmentId,
+      selectMinistry,
       setCentralView,
-      setMinistryView,
-      setDepartmentView
+      setMinistryView
     }}>
       {children}
     </AuthContext.Provider>

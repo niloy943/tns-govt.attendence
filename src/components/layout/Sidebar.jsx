@@ -12,14 +12,27 @@ import {
   ShieldAlert,
   ChevronRight,
   Landmark,
-  Building,
-  Layers
+  Building
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { dummyMinistries } from '../../data/dummy/ministries';
 import GovtLogo from './GovtLogo';
 
 export default function Sidebar() {
-  const { currentUser, setCentralView, setMinistryView, setDepartmentView } = useAuth();
+  const { 
+    currentUser, 
+    viewLevel, 
+    setCentralView, 
+    setMinistryView, 
+    selectedMinistryId 
+  } = useAuth();
+
+  // Selected Ministry Object to dynamically show name in fixed brand header
+  const selectedMinistryObj = selectedMinistryId !== 'all'
+    ? dummyMinistries.find(m => m.id === Number(selectedMinistryId))
+    : null;
+
+  const headerSubtitle = selectedMinistryObj ? selectedMinistryObj.name : "Ministry";
 
   const navSections = [
     {
@@ -37,7 +50,7 @@ export default function Sidebar() {
       subtitle: "",
       icon: Building,
       items: [
-        { to: "/", label: "Ministry Dashboard", icon: LayoutDashboard, onClick: () => setMinistryView(1) },
+        { to: "/", label: "Ministry Dashboard", icon: LayoutDashboard, onClick: () => setMinistryView(selectedMinistryId === 'all' ? 1 : selectedMinistryId) },
         {
           label: "Employee",
           icon: Users,
@@ -47,16 +60,6 @@ export default function Sidebar() {
             { to: "/employee/chart", label: "Hierarchy Chart" }
           ]
         },
-        { to: "/leave", label: "Leave Requests", icon: FileText },
-        { to: "/overtime", label: "Overtime Duty", icon: Clock },
-      ]
-    },
-    {
-      level: "Department",
-      subtitle: "",
-      icon: Layers,
-      items: [
-        { to: "/", label: "Department Dashboard", icon: LayoutDashboard, onClick: () => setDepartmentView(1) },
         { 
           label: "Attendance Logs", 
           icon: CalendarCheck,
@@ -67,7 +70,9 @@ export default function Sidebar() {
             { to: "/attendance/sheet", label: "Attendance Sheet" }
           ]
         },
-        { to: "/settings", label: "Department Rules", icon: SettingsIcon },
+        { to: "/leave", label: "Leave Requests", icon: FileText },
+        { to: "/overtime", label: "Overtime Duty", icon: Clock },
+        { to: "/settings", label: "System Settings", icon: SettingsIcon },
       ]
     }
   ];
@@ -85,7 +90,7 @@ export default function Sidebar() {
       position: 'sticky',
       top: 0
     }}>
-      {/* 1. FIXED (STICKY) BRAND HEADER */}
+      {/* 1. FIXED (STICKY) BRAND HEADER WITH DYNAMIC SUBTITLE */}
       <div style={{
         padding: '1.25rem 1.5rem',
         borderBottom: '1px solid #1E293B',
@@ -102,8 +107,18 @@ export default function Sidebar() {
           <h1 style={{ fontSize: '0.8125rem', fontWeight: 700, lineHeight: 1.2, color: '#F8FAFC' }}>
             Government of Bangladesh
           </h1>
-          <p style={{ fontSize: '0.725rem', color: '#94A3B8', fontWeight: 600, marginTop: '0.125rem' }}>
-            Ministry
+          {/* Subtitle displays the selected ministry's name dynamically */}
+          <p style={{
+            fontSize: '0.725rem',
+            color: '#60A5FA',
+            fontWeight: 600,
+            marginTop: '0.2rem',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            maxWidth: '165px'
+          }} title={headerSubtitle}>
+            {headerSubtitle}
           </p>
         </div>
       </div>
@@ -127,13 +142,13 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* 2. SCROLLABLE NAVIGATION CONTENT */}
+      {/* 2. SCROLLABLE NAVIGATION CONTENT (Central -> Ministry) */}
       <nav style={{ padding: '0.75rem 1rem', flex: 1, overflowY: 'auto' }}>
         {navSections.map((section, sIdx) => {
           const SectionIcon = section.icon;
           return (
             <div key={sIdx} style={{ marginBottom: '1.25rem' }}>
-              {/* Tier Section Header (Central -> Ministry -> Department) */}
+              {/* Tier Section Header */}
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -152,15 +167,6 @@ export default function Sidebar() {
                 }}>
                   {section.level}
                 </span>
-                {section.subtitle && (
-                  <span style={{
-                    fontSize: '0.65rem',
-                    color: '#64748B',
-                    marginLeft: 'auto'
-                  }}>
-                    {section.subtitle}
-                  </span>
-                )}
               </div>
 
               {/* Tier Nav Items */}
