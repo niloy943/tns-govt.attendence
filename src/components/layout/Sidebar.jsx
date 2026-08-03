@@ -65,7 +65,7 @@ export default function Sidebar() {
         alignItems: 'center',
         gap: '0.75rem'
       }}>
-        <GovtLogo style={{ width: '2.5rem', height: '2.5rem' }} />
+        <GovtLogo style={{ width: '2.75rem', height: '2.75rem' }} />
         <div>
           <h1 style={{ fontSize: '1rem', fontWeight: 700, lineHeight: 1.2 }}>Govt Attendence</h1>
           <p style={{ fontSize: '0.725rem', color: 'var(--text-sidebar)' }}>Ministry Portal</p>
