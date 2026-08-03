@@ -8,7 +8,8 @@ import {
   XCircle, 
   FileCheck, 
   ExternalLink,
-  Calendar
+  Calendar,
+  History
 } from 'lucide-react';
 import { useLeaveRequests, useCreateLeaveRequest, useUpdateLeaveStatus } from '../../hooks/useLeave';
 import { leaveCategories } from '../../data/dummy/leaveRequests';
@@ -16,7 +17,7 @@ import StatusBadge from '../../components/shared/StatusBadge';
 import EmptyState from '../../components/shared/EmptyState';
 import { useAuth } from '../../context/AuthContext';
 
-export default function Leave() {
+export default function Leave({ initialTab = 'apply' }) {
   const { currentUser } = useAuth();
   const { data: leaveRequests, isLoading } = useLeaveRequests();
   const createMutation = useCreateLeaveRequest();
@@ -96,107 +97,114 @@ export default function Leave() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }} className="animate-fade-in">
-      {/* Header */}
+      {/* Page Header */}
       <div>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--slate-text)' }}>
           Ministry Leave Management & Applications
         </h1>
+        <p style={{ fontSize: '0.875rem', color: 'var(--slate-muted)', marginTop: '0.25rem' }}>
+          Official leave applications and rotational duty shifts
+        </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1.5rem' }}>
-        {/* Application Form */}
-        <div className="card-base" style={{ padding: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '1.25rem' }}>
-            <FileText size={20} style={{ color: 'var(--primary)' }} />
-            <h2 style={{ fontSize: '1.125rem', fontWeight: 700 }}>Apply for Leave</h2>
-          </div>
-
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div>
-              <label className="form-label">Leave Category *</label>
-              <select
-                className="form-select"
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              >
-                {leaveCategories.map((c) => (
-                  <option key={c.value} value={c.value}>
-                    {c.label} ({c.code} - Max {c.maxDays} days)
-                  </option>
-                ))}
-              </select>
+      {/* VERTICALLY STACKED SECTIONS */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+        
+        {/* Section 1: Apply for Leave (Rendered if initialTab is 'apply' or default) */}
+        {initialTab !== 'history' && (
+          <div className="card-base" style={{ padding: '1.5rem', maxWidth: '48rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '1.25rem' }}>
+              <FileText size={20} style={{ color: 'var(--primary)' }} />
+              <h2 style={{ fontSize: '1.125rem', fontWeight: 700 }}>Apply for Leave</h2>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label className="form-label">Start Date *</label>
-                <input
-                  type="date"
-                  required
-                  className="form-input"
-                  value={formData.startDate}
-                  onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                />
+                <label className="form-label">Leave Category *</label>
+                <select
+                  className="form-select"
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                >
+                  {leaveCategories.map((c) => (
+                    <option key={c.value} value={c.value}>
+                      {c.label} ({c.code} - Max {c.maxDays} days)
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div>
-                <label className="form-label">End Date *</label>
-                <input
-                  type="date"
-                  required
-                  className="form-input"
-                  value={formData.endDate}
-                  onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                />
-              </div>
-            </div>
 
-            <div>
-              <label className="form-label">Reason / Justification *</label>
-              <textarea
-                rows={3}
-                required
-                className="form-textarea"
-                placeholder="State official reason or rotational duty shift details..."
-                value={formData.reason}
-                onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
-              />
-            </div>
-
-            {/* Optional Attachment */}
-            <div>
-              <label className="form-label">
-                Attachment (Optional for Rotational / Medical Note)
-              </label>
-              <div style={{
-                border: '1px dashed var(--slate-border)',
-                borderRadius: '0.5rem',
-                padding: '0.75rem',
-                backgroundColor: '#F8FAFC',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}>
-                  <Paperclip size={18} style={{ color: 'var(--slate-muted)' }} />
-                  <span style={{ fontSize: '0.8125rem', color: 'var(--slate-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {formData.attachmentName || "Upload PDF or Scanned Document"}
-                  </span>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label className="form-label">Start Date *</label>
+                  <input
+                    type="date"
+                    required
+                    className="form-input"
+                    value={formData.startDate}
+                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                  />
                 </div>
-                <label className="btn btn-secondary" style={{ padding: '0.25rem 0.625rem', fontSize: '0.75rem', cursor: 'pointer' }}>
-                  Browse
-                  <input type="file" accept=".pdf,.png,.jpg,.jpeg" onChange={handleFileChange} style={{ display: 'none' }} />
-                </label>
+                <div>
+                  <label className="form-label">End Date *</label>
+                  <input
+                    type="date"
+                    required
+                    className="form-input"
+                    value={formData.endDate}
+                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                  />
+                </div>
               </div>
-            </div>
 
-            <button type="submit" disabled={createMutation.isPending} className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
-              <Send size={18} />
-              {createMutation.isPending ? 'Submitting...' : 'Submit Application'}
-            </button>
-          </form>
-        </div>
+              <div>
+                <label className="form-label">Reason / Justification *</label>
+                <textarea
+                  rows={3}
+                  required
+                  className="form-textarea"
+                  placeholder="State official reason or rotational duty shift details..."
+                  value={formData.reason}
+                  onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+                />
+              </div>
 
-        {/* Leave Requests History */}
+              {/* Optional Attachment */}
+              <div>
+                <label className="form-label">
+                  Attachment (Optional for Rotational / Medical Note)
+                </label>
+                <div style={{
+                  border: '1px dashed var(--slate-border)',
+                  borderRadius: '0.5rem',
+                  padding: '0.75rem',
+                  backgroundColor: '#F8FAFC',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}>
+                    <Paperclip size={18} style={{ color: 'var(--slate-muted)' }} />
+                    <span style={{ fontSize: '0.8125rem', color: 'var(--slate-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {formData.attachmentName || "Upload PDF or Scanned Document"}
+                    </span>
+                  </div>
+                  <label className="btn btn-secondary" style={{ padding: '0.25rem 0.625rem', fontSize: '0.75rem', cursor: 'pointer' }}>
+                    Browse
+                    <input type="file" accept=".pdf,.png,.jpg,.jpeg" onChange={handleFileChange} style={{ display: 'none' }} />
+                  </label>
+                </div>
+              </div>
+
+              <button type="submit" disabled={createMutation.isPending} className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
+                <Send size={18} />
+                {createMutation.isPending ? 'Submitting...' : 'Submit Application'}
+              </button>
+            </form>
+          </div>
+        )}
+
+        {/* Section 2: Leave History & Approvals */}
         <div className="card-base" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
             <h2 style={{ fontSize: '1.125rem', fontWeight: 700 }}>Leave History & Approvals</h2>

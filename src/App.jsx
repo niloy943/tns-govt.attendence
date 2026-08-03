@@ -36,8 +36,10 @@ export default function App() {
         <Route path="/attendance/sheet" element={<AttendanceSheet />} />
         <Route path="/attendance" element={<Navigate to="/attendance/list" replace />} />
         
-        {/* Leave */}
-        <Route path="/leave" element={<Leave />} />
+        {/* Leave Sub-routes */}
+        <Route path="/leave/apply" element={<Leave initialTab="apply" />} />
+        <Route path="/leave/history" element={<Leave initialTab="history" />} />
+        <Route path="/leave" element={<Navigate to="/leave/apply" replace />} />
         
         {/* Overtime */}
         <Route path="/overtime" element={<Overtime />} />

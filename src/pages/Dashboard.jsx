@@ -244,12 +244,6 @@ export default function Dashboard() {
               <p style={{ fontSize: '1.75rem', fontWeight: 800, marginTop: '0.25rem', color: '#2563EB' }}>{selectedMinistryObj.employeeCount}</p>
               <span style={{ fontSize: '0.75rem', color: '#64748B' }}>Active Roster Strength</span>
             </div>
-
-            <div className="card-base" style={{ padding: '1.25rem' }}>
-              <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--slate-muted)' }}>Annual Budget</span>
-              <p style={{ fontSize: '1.5rem', fontWeight: 800, marginTop: '0.25rem', color: '#059669' }}>{selectedMinistryObj.budgetAllocated}</p>
-              <span style={{ fontSize: '0.75rem', color: '#64748B' }}>Headquarters Allocation</span>
-            </div>
           </div>
 
           {/* Department-Wise Attendance Charts Grid */}

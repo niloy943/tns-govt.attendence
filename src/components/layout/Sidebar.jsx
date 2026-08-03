@@ -35,7 +35,7 @@ export default function Sidebar() {
 
   const headerSubtitle = selectedMinistryObj ? selectedMinistryObj.name : "Central Secretariat";
 
-  // Explicitly separate active states for Central vs Ministry Dashboard on route '/'
+  // Active state logic for Central vs Ministry Dashboard on route '/'
   const isCentralActive = location.pathname === '/' && (viewLevel === 'central' || selectedMinistryId === 'all');
   const isMinistryActive = location.pathname === '/' && viewLevel === 'ministry' && selectedMinistryId !== 'all';
 
@@ -52,8 +52,7 @@ export default function Sidebar() {
           isCustomActive: isCentralActive,
           onClick: () => setCentralView() 
         },
-        { to: "/ministry", label: "All Ministries", icon: Building2 },
-        { to: "/reports", label: "Government Reports", icon: BarChart3 },
+        { to: "/ministry", label: "All Ministry", icon: Building2 },
       ]
     },
     {
@@ -72,7 +71,7 @@ export default function Sidebar() {
           }
         },
         {
-          label: "Employee Management",
+          label: "Employee",
           icon: Users,
           children: [
             { to: "/employee/create", label: "Create Employee" },
@@ -90,9 +89,17 @@ export default function Sidebar() {
             { to: "/attendance/sheet", label: "Attendance Sheet" }
           ]
         },
-        { to: "/leave", label: "Leave Requests", icon: FileText },
+        { 
+          label: "Leave Management", 
+          icon: FileText,
+          children: [
+            { to: "/leave/apply", label: "Apply for Leave" },
+            { to: "/leave/history", label: "Leave History & Approvals" }
+          ]
+        },
         { to: "/overtime", label: "Overtime Duty", icon: Clock },
         { to: "/settings", label: "Settings & Control", icon: SettingsIcon },
+        { to: "/reports", label: "Government Reports", icon: BarChart3 },
       ]
     }
   ];
@@ -110,7 +117,7 @@ export default function Sidebar() {
       position: 'sticky',
       top: 0
     }}>
-      {/* 1. FIXED BRAND HEADER WITH DYNAMIC SUBTITLE */}
+      {/* 1. BRAND HEADER */}
       <div style={{
         padding: '1.25rem 1.5rem',
         borderBottom: '1px solid #1E293B',
@@ -127,7 +134,6 @@ export default function Sidebar() {
           <h1 style={{ fontSize: '0.8125rem', fontWeight: 700, lineHeight: 1.2, color: '#F8FAFC' }}>
             Government of Bangladesh
           </h1>
-          {/* Subtitle displays selected ministry or Central Secretariat */}
           <p style={{
             fontSize: '0.725rem',
             color: selectedMinistryObj ? '#60A5FA' : '#38BDF8',
@@ -168,7 +174,7 @@ export default function Sidebar() {
           const SectionIcon = section.icon;
           return (
             <div key={sIdx} style={{ marginBottom: '1.25rem' }}>
-              {/* Tier Section Header */}
+              {/* Section Header */}
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -189,8 +195,8 @@ export default function Sidebar() {
                 </span>
               </div>
 
-              {/* Tier Nav Items */}
-              <ul style={{ listStyle: 'none', paddingLeft: '0.5rem' }}>
+              {/* Nav Items */}
+              <ul style={{ listStyle: 'none', paddingLeft: '0.25rem' }}>
                 {section.items.map((item, index) => {
                   const Icon = item.icon;
                   if (item.children) {
@@ -208,7 +214,7 @@ export default function Sidebar() {
                           <Icon size={16} style={{ color: '#94A3B8' }} />
                           <span>{item.label}</span>
                         </div>
-                        <ul style={{ listStyle: 'none', paddingLeft: '1.5rem', marginTop: '0.125rem' }}>
+                        <ul style={{ listStyle: 'none', paddingLeft: '1.5rem', marginTop: '0.125rem', borderLeft: '1px solid rgba(255,255,255,0.1)' }}>
                           {item.children.map((child, cIdx) => (
                             <li key={cIdx} style={{ marginBottom: '0.2rem' }}>
                               <NavLink
