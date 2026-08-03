@@ -1,7 +1,4 @@
-Safety
-Disability
-Child
-Planningact';
+import React, { useState } from 'react';
 
 export default function BarChartWidget({ title = "Department-wise Attendance Comparison" }) {
   const [hoveredIdx, setHoveredIdx] = useState(null);
@@ -39,28 +36,31 @@ export default function BarChartWidget({ title = "Department-wise Attendance Com
               gap: '0.5rem',
               flex: 1,
               height: '100%',
-              justifyContent: 'flex-end',
+              justify: 'flex-end',
               cursor: 'pointer'
             }}
           >
-            {/* Tooltip Value */}
-            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: item.color, opacity: hoveredIdx === idx ? 1 : 0.8 }}>
+            {/* Value Label */}
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: hoveredIdx === idx ? item.color : '#0F172A', transition: 'color 0.2s ease' }}>
               {item.present}%
             </span>
 
-            {/* Bar */}
-            <div style={{
-              width: '32px',
-              height: `${item.present * 1.3}px`,
-              backgroundColor: item.color,
-              borderRadius: '0.375rem 0.375rem 0 0',
-              transition: 'all 0.2s ease',
-              transform: hoveredIdx === idx ? 'scaleY(1.05)' : 'scaleY(1)',
-              boxShadow: hoveredIdx === idx ? '0 4px 12px rgba(0,0,0,0.15)' : 'none'
-            }} />
+            {/* Vertical Bar */}
+            <div
+              style={{
+                width: '36px',
+                height: `${item.present}%`,
+                backgroundColor: item.color,
+                borderRadius: '0.375rem 0.375rem 0 0',
+                opacity: hoveredIdx === null || hoveredIdx === idx ? 1 : 0.6,
+                transform: hoveredIdx === idx ? 'scaleY(1.04)' : 'scaleY(1)',
+                transformOrigin: 'bottom',
+                transition: 'all 0.2s ease'
+              }}
+            />
 
-            {/* Label */}
-            <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--slate-muted)', textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '64px' }}>
+            {/* X Axis Label */}
+            <span style={{ fontSize: '0.675rem', fontWeight: 700, color: 'var(--slate-muted)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '80px' }} title={item.label}>
               {item.label}
             </span>
           </div>
