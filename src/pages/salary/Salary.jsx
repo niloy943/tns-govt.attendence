@@ -30,13 +30,19 @@ import {
   X,
   Shield,
   UserCheck,
-  AlertCircle
+  AlertCircle,
+  Settings as SettingsIcon,
+  Save,
+  Sliders,
+  MinusCircle
 } from 'lucide-react';
 import { useEmployees } from '../../hooks/useEmployees';
 import { useAuth } from '../../context/AuthContext';
 import { dummyMinistries } from '../../data/dummy/ministries';
+import BarChartWidget from '../../components/charts/BarChartWidget';
+import PieChartWidget from '../../components/charts/PieChartWidget';
 
-// Initial Ministry Salary Budget Allocations (Monthly in BDT Taka)
+// Initial Ministry Salary Budget Allocations
 const INITIAL_MINISTRY_BUDGETS = {
   1: 1500000, // BDT 15.0 Lakh / month for Ministry of Social Welfare
   2: 1200000, // BDT 12.0 Lakh / month for Ministry of Women & Children Affairs
@@ -53,7 +59,7 @@ export default function Salary() {
   const [simulatedRole, setSimulatedRole] = useState(currentUser?.role || 'super_admin');
   const isSuperAdmin = simulatedRole === 'super_admin';
 
-  // Tab State: 'dashboard' | 'budget' | 'salary' | 'payroll' | 'reports' | 'analytics'
+  // Tab State: 'dashboard' | 'budget' | 'salary' | 'payroll' | 'reports' | 'analytics' | 'policy'
   const [activeTab, setActiveTab] = useState('dashboard');
 
   // Filters State
@@ -67,6 +73,18 @@ export default function Salary() {
   const [ministryBudgets, setMinistryBudgets] = useState(INITIAL_MINISTRY_BUDGETS);
   const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
   const [budgetForm, setBudgetForm] = useState({ ministryId: 1, allocatedAmount: 1500000 });
+
+  // Salary Policy Settings State (salary_settings schema)
+  const [salaryPolicy, setSalaryPolicy] = useState({
+    id: 1,
+    workingDays: 26,
+    salaryPolicy: 'working_days', // 'working_days' | 'calendar_days'
+    halfDayPolicy: '50_percent',  // '50_percent' | 'no_deduction'
+    latePolicy: 'deduct_after_3', // 'no_deduction' | 'deduct_after_3'
+    currency: 'BDT',
+    incomeTaxRate: 5,
+    providentFundRate: 10
+  });
 
   // Payroll Status State: 'draft' | 'generated' | 'approved' | 'locked'
   const [payrollStatus, setPayrollStatus] = useState('generated');
@@ -203,23 +221,54 @@ export default function Salary() {
     }).sort((a, b) => b.totalSalary - a.totalSalary);
   }, [filteredEmployees, metrics.totalMonthlySalaryExpense]);
 
-  // Calculate Net Salary Components (Basic, Allowances, Deductions)
+  // Calculate Itemized Net Salary Components (Allowances & Deductions)
   const calculateSalaryComponents = (monthlySalary) => {
-    const basic = Math.round(monthlySalary * 0.65);
+    const basic = Math.round(monthlySalary * 0.55);
     const houseRent = Math.round(monthlySalary * 0.20);
     const medical = Math.round(monthlySalary * 0.10);
     const transport = Math.round(monthlySalary * 0.05);
-    const pfDeduction = Math.round(basic * 0.10);
-    const taxDeduction = Math.round(monthlySalary * 0.05);
-    const netSalary = basic + houseRent + medical + transport - (pfDeduction + taxDeduction);
+    const specialAllowance = Math.round(monthlySalary * 0.04);
+    const festivalBonus = Math.round(monthlySalary * 0.03);
+    const otherAllowance = Math.round(monthlySalary * 0.03);
+
+    const totalAllowances = houseRent + medical + transport + specialAllowance + festivalBonus + otherAllowance;
+
+    // Itemized Deductions (Flowchart spec)
+    const pfDeduction = Math.round(basic * (salaryPolicy.providentFundRate / 100));
+    const taxDeduction = Math.round(monthlySalary * (salaryPolicy.incomeTaxRate / 100));
+    const absentDeduction = 0;
+    const latePenalty = 0;
+    const loanDeduction = 0;
+    const otherDeduction = 0;
+
+    const totalDeductions = pfDeduction + taxDeduction + absentDeduction + latePenalty + loanDeduction + otherDeduction;
+
+    const netSalary = basic + totalAllowances - totalDeductions;
     
-    return { basic, houseRent, medical, transport, pfDeduction, taxDeduction, netSalary };
+    return { 
+      basic, 
+      houseRent, 
+      medical, 
+      transport, 
+      specialAllowance, 
+      festivalBonus, 
+      otherAllowance, 
+      totalAllowances,
+      pfDeduction, 
+      taxDeduction, 
+      absentDeduction,
+      latePenalty,
+      loanDeduction,
+      otherDeduction,
+      totalDeductions,
+      netSalary 
+    };
   };
 
   // Format currency numbers into BDT Taka
   const formatBDT = (amount) => {
     return new Intl.NumberFormat('en-BD', { style: 'currency', currency: 'BDT', maximumFractionDigits: 0 })
-      .format(amount)
+      .format(amount || 0)
       .replace('BDT', '৳');
   };
 
@@ -237,6 +286,12 @@ export default function Salary() {
     setIsBudgetModalOpen(false);
   };
 
+  // Save salary policy
+  const handleSavePolicy = (e) => {
+    e.preventDefault();
+    alert("Salary Policy & Deduction Settings successfully saved!");
+  };
+
   // Export report alert
   const handleExportReport = (type, format) => {
     alert(`Generating & Downloading ${type} Report in ${format.toUpperCase()} format...`);
@@ -249,71 +304,6 @@ export default function Salary() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }} className="animate-fade-in">
       
-      {/* PHASE 8: ADVANCED PERMISSION CONTROL SWITCHER BAR */}
-      <div className="card-base" style={{ padding: '0.75rem 1.25rem', backgroundColor: '#0F172A', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', borderLeft: '4px solid #38BDF8' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Shield size={20} style={{ color: '#38BDF8' }} />
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontSize: '0.875rem', fontWeight: 800, color: '#FFFFFF' }}>Phase 8 Advanced Permission Controls</span>
-              <span style={{ fontSize: '0.7rem', fontWeight: 800, backgroundColor: isSuperAdmin ? '#38BDF8' : '#10B981', color: isSuperAdmin ? '#0F172A' : '#FFFFFF', padding: '0.15rem 0.5rem', borderRadius: '0.375rem' }}>
-                {isSuperAdmin ? "SUPER ADMIN ACCESS" : "MINISTRY ADMIN VIEW"}
-              </span>
-            </div>
-            <p style={{ fontSize: '0.75rem', color: '#94A3B8', margin: 0, marginTop: '0.125rem' }}>
-              {isSuperAdmin 
-                ? "Full access to all ministries, budget allocation, salary editing, and global payroll approval" 
-                : "Locked to assigned ministry view. Budget allocation and global payroll approval disabled."}
-            </p>
-          </div>
-        </div>
-
-        {/* Interactive Role Switcher Toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(255, 255, 255, 0.1)', padding: '0.25rem', borderRadius: '0.5rem' }}>
-          <span style={{ fontSize: '0.75rem', color: '#94A3B8', fontWeight: 600, paddingLeft: '0.375rem' }}>Simulate Role:</span>
-          <button
-            onClick={() => {
-              setSimulatedRole('super_admin');
-              setActiveMinistryId('all');
-            }}
-            style={{
-              padding: '0.35rem 0.75rem',
-              borderRadius: '0.375rem',
-              fontSize: '0.75rem',
-              fontWeight: 800,
-              border: 'none',
-              cursor: 'pointer',
-              backgroundColor: isSuperAdmin ? '#38BDF8' : 'transparent',
-              color: isSuperAdmin ? '#0F172A' : '#94A3B8',
-              transition: 'all 0.15s ease'
-            }}
-          >
-            👑 Super Admin
-          </button>
-          <button
-            onClick={() => {
-              setSimulatedRole('ministry_admin');
-              const targetId = String(currentUser?.ministryId || 2);
-              setActiveMinistryId(targetId);
-              setSelectedMinistryId(targetId);
-            }}
-            style={{
-              padding: '0.35rem 0.75rem',
-              borderRadius: '0.375rem',
-              fontSize: '0.75rem',
-              fontWeight: 800,
-              border: 'none',
-              cursor: 'pointer',
-              backgroundColor: !isSuperAdmin ? '#10B981' : 'transparent',
-              color: !isSuperAdmin ? '#FFFFFF' : '#94A3B8',
-              transition: 'all 0.15s ease'
-            }}
-          >
-            🏢 Ministry Admin
-          </button>
-        </div>
-      </div>
-
       {/* Module Title Banner */}
       <div style={{
         backgroundColor: '#059669',
@@ -341,17 +331,20 @@ export default function Salary() {
           </div>
           <div>
             <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF', margin: 0 }}>
-              Salary & Budget Management Module
+              Salary & Budget Management
             </h1>
-            <p style={{ fontSize: '0.8125rem', color: '#D1FAE5', margin: 0, marginTop: '0.125rem' }}>
-              Government financial allocations, payroll processing engine, and departmental cost analytics
-            </p>
           </div>
         </div>
 
         <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', color: '#FFFFFF', padding: '0.5rem', borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Synced with Employee Roster">
           <ShieldCheck size={20} />
         </div>
+      </div>
+
+      {/* Visual Chart Widgets */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+        <BarChartWidget title="Department Salary Expense" />
+        <PieChartWidget title="Budget Allocation Breakdown" />
       </div>
 
       {/* PHASE 7: AUTOMATIC ALERTS & NOTIFICATION BANNERS */}
@@ -392,7 +385,7 @@ export default function Salary() {
             />
           </div>
 
-          {/* Ministry Filter (Phase 8: Disabled for Ministry Admin) */}
+          {/* Ministry Filter */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Building2 size={18} style={{ color: 'var(--emerald)' }} />
             <select
@@ -414,11 +407,6 @@ export default function Salary() {
                 <option key={m.id} value={m.id}>📍 {m.name}</option>
               ))}
             </select>
-            {!isSuperAdmin && (
-              <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#047857', backgroundColor: '#ECFDF5', padding: '0.2rem 0.5rem', borderRadius: '0.375rem', border: '1px solid #A7F3D0' }}>
-                LOCKED TO ASSIGNED MINISTRY
-              </span>
-            )}
           </div>
 
           {/* Department Filter */}
@@ -467,7 +455,7 @@ export default function Salary() {
         </div>
       </div>
 
-      {/* MODULE TAB NAVIGATION (PHASES 1-6) */}
+      {/* MODULE TAB NAVIGATION */}
       <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid var(--slate-border)', paddingBottom: '0.25rem', flexWrap: 'wrap' }}>
         <button
           onClick={() => setActiveTab('dashboard')}
@@ -581,6 +569,25 @@ export default function Salary() {
           }}
         >
           <TrendingUp size={16} /> Analytics
+        </button>
+
+        <button
+          onClick={() => setActiveTab('policy')}
+          style={{
+            padding: '0.625rem 1.125rem',
+            borderRadius: '0.5rem 0.5rem 0 0',
+            fontSize: '0.875rem',
+            fontWeight: 700,
+            border: 'none',
+            cursor: 'pointer',
+            backgroundColor: activeTab === 'policy' ? 'var(--primary)' : 'transparent',
+            color: activeTab === 'policy' ? '#FFFFFF' : 'var(--slate-text)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+        >
+          <SettingsIcon size={16} /> Salary Policy & Rules
         </button>
       </div>
 
@@ -704,7 +711,7 @@ export default function Salary() {
                   {ministrySummaries.map(m => (
                     <tr key={m.ministry.id}>
                       <td style={{ fontWeight: 700 }}>{m.ministry.name} ({m.ministry.code})</td>
-                      <td style={{ fontWeight: 600 }}>{m.employeeCount} Officers</td>
+                      <td style={{ fontWeight: 600 }}>{m.employeeCount}</td>
                       <td style={{ fontWeight: 700, color: '#059669' }}>{formatBDT(m.totalSalary)}</td>
                       <td style={{ fontWeight: 700, color: '#4F46E5' }}>{formatBDT(m.allocatedBudget)}</td>
                       <td style={{ fontWeight: 700, color: m.remainingBudget >= 0 ? '#047857' : '#DC2626' }}>{formatBDT(m.remainingBudget)}</td>
@@ -774,8 +781,8 @@ export default function Salary() {
                           </div>
                         </td>
                         <td style={{ fontWeight: 600 }}>{formatBDT(comp.basic)}</td>
-                        <td style={{ color: '#059669', fontSize: '0.8125rem' }}>+{formatBDT(comp.houseRent + comp.medical + comp.transport)}</td>
-                        <td style={{ color: '#DC2626', fontSize: '0.8125rem' }}>-{formatBDT(comp.pfDeduction + comp.taxDeduction)}</td>
+                        <td style={{ color: '#059669', fontSize: '0.8125rem' }}>+{formatBDT(comp.totalAllowances)}</td>
+                        <td style={{ color: '#DC2626', fontSize: '0.8125rem' }}>-{formatBDT(comp.totalDeductions)}</td>
                         <td style={{ textAlign: 'right', fontWeight: 800, color: '#059669', fontSize: '0.9375rem' }}>{formatBDT(comp.netSalary)}</td>
                         <td style={{ textAlign: 'right' }}>
                           <button onClick={() => setSelectedOfficerForSalary(emp)} className="btn btn-ghost" style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}>
@@ -850,7 +857,7 @@ export default function Salary() {
               { title: "Officer Individual Salary Slip Report", desc: "Detailed basic salary, medical, house rent, and tax deductions." },
               { title: "Monthly Secretarial Payroll Report", desc: "Government payroll summary formatted for audit and secretariat clearance." }
             ].map((rep, idx) => (
-              <div key={idx} className="card-base" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div key={idx} className="card-base" style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', justify: 'space-between' }}>
                 <div>
                   <FileSpreadsheet size={24} style={{ color: 'var(--primary)', marginBottom: '0.5rem' }} />
                   <h3 style={{ fontSize: '1rem', fontWeight: 700 }}>{rep.title}</h3>
@@ -901,23 +908,363 @@ export default function Salary() {
         </div>
       )}
 
-      {/* PHASE 2 MODAL: BUDGET ALLOCATION FOR SUPER ADMIN */}
+      {/* SALARY POLICY & COMPONENTS SETTINGS TAB */}
+      {activeTab === 'policy' && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+          
+          {/* Salary Policy Form (salary_settings Schema) */}
+          <div className="card-base" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div style={{ borderBottom: '2px solid var(--slate-border)', paddingBottom: '0.75rem' }}>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 800, color: 'var(--slate-text)', margin: 0 }}>
+                Salary Policy Configuration
+              </h3>
+              <p style={{ fontSize: '0.75rem', color: 'var(--slate-muted)', margin: '0.125rem 0 0 0' }}>
+                Schema: <code style={{ backgroundColor: '#EEF2FF', color: '#4F46E5', padding: '0.1rem 0.4rem', borderRadius: '0.25rem' }}>salary_settings</code>
+              </p>
+            </div>
+
+            <form onSubmit={handleSavePolicy} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              
+              {/* Working Days */}
+              <div>
+                <label className="form-label" style={{ fontWeight: 700 }}>Working Days Per Month</label>
+                <input
+                  type="number"
+                  className="form-input"
+                  style={{ width: '120px', fontWeight: 700 }}
+                  value={salaryPolicy.workingDays}
+                  onChange={e => setSalaryPolicy({ ...salaryPolicy, workingDays: Number(e.target.value) })}
+                />
+              </div>
+
+              {/* Salary Calculation Policy */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+                <label className="form-label" style={{ fontWeight: 700 }}>Salary Calculation Rule</label>
+                <div style={{ display: 'flex', gap: '1.5rem' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', cursor: 'pointer', fontWeight: 600 }}>
+                    <input
+                      type="radio"
+                      name="salaryPolicy"
+                      value="working_days"
+                      checked={salaryPolicy.salaryPolicy === 'working_days'}
+                      onChange={e => setSalaryPolicy({ ...salaryPolicy, salaryPolicy: e.target.value })}
+                    /> Working Days
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', cursor: 'pointer', fontWeight: 600 }}>
+                    <input
+                      type="radio"
+                      name="salaryPolicy"
+                      value="calendar_days"
+                      checked={salaryPolicy.salaryPolicy === 'calendar_days'}
+                      onChange={e => setSalaryPolicy({ ...salaryPolicy, salaryPolicy: e.target.value })}
+                    /> Calendar Days
+                  </label>
+                </div>
+              </div>
+
+              {/* Half Day Policy */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+                <label className="form-label" style={{ fontWeight: 700 }}>Half Day Rule</label>
+                <div style={{ display: 'flex', gap: '1.5rem' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', cursor: 'pointer', fontWeight: 600 }}>
+                    <input
+                      type="radio"
+                      name="halfDayPolicy"
+                      value="50_percent"
+                      checked={salaryPolicy.halfDayPolicy === '50_percent'}
+                      onChange={e => setSalaryPolicy({ ...salaryPolicy, halfDayPolicy: e.target.value })}
+                    /> 50% Deduction
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', cursor: 'pointer', fontWeight: 600 }}>
+                    <input
+                      type="radio"
+                      name="halfDayPolicy"
+                      value="no_deduction"
+                      checked={salaryPolicy.halfDayPolicy === 'no_deduction'}
+                      onChange={e => setSalaryPolicy({ ...salaryPolicy, halfDayPolicy: e.target.value })}
+                    /> No Deduction
+                  </label>
+                </div>
+              </div>
+
+              {/* Late Policy */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+                <label className="form-label" style={{ fontWeight: 700 }}>Late Policy</label>
+                <div style={{ display: 'flex', gap: '1.5rem' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', cursor: 'pointer', fontWeight: 600 }}>
+                    <input
+                      type="radio"
+                      name="latePolicy"
+                      value="no_deduction"
+                      checked={salaryPolicy.latePolicy === 'no_deduction'}
+                      onChange={e => setSalaryPolicy({ ...salaryPolicy, latePolicy: e.target.value })}
+                    /> No Deduction
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', cursor: 'pointer', fontWeight: 600 }}>
+                    <input
+                      type="radio"
+                      name="latePolicy"
+                      value="deduct_after_3"
+                      checked={salaryPolicy.latePolicy === 'deduct_after_3'}
+                      onChange={e => setSalaryPolicy({ ...salaryPolicy, latePolicy: e.target.value })}
+                    /> Deduct After 3 Lates
+                  </label>
+                </div>
+              </div>
+
+              {/* Deduction Rates Configuration */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label className="form-label" style={{ fontWeight: 700 }}>Income Tax (%)</label>
+                  <input
+                    type="number"
+                    className="form-input"
+                    value={salaryPolicy.incomeTaxRate}
+                    onChange={e => setSalaryPolicy({ ...salaryPolicy, incomeTaxRate: Number(e.target.value) })}
+                  />
+                </div>
+                <div>
+                  <label className="form-label" style={{ fontWeight: 700 }}>Provident Fund (%)</label>
+                  <input
+                    type="number"
+                    className="form-input"
+                    value={salaryPolicy.providentFundRate}
+                    onChange={e => setSalaryPolicy({ ...salaryPolicy, providentFundRate: Number(e.target.value) })}
+                  />
+                </div>
+              </div>
+
+              {/* Currency */}
+              <div>
+                <label className="form-label" style={{ fontWeight: 700 }}>Currency</label>
+                <select
+                  className="form-select"
+                  style={{ width: '140px', fontWeight: 700 }}
+                  value={salaryPolicy.currency}
+                  onChange={e => setSalaryPolicy({ ...salaryPolicy, currency: e.target.value })}
+                >
+                  <option value="BDT">BDT (৳ Taka)</option>
+                  <option value="USD">USD ($ Dollar)</option>
+                  <option value="EUR">EUR (€ Euro)</option>
+                </select>
+              </div>
+
+              {/* Save Button */}
+              <div style={{ paddingTop: '1rem', borderTop: '1px solid var(--slate-border)' }}>
+                <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#059669', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Save size={16} /> Save Policy Settings
+                </button>
+              </div>
+            </form>
+
+            {/* PAYROLL LOCK & GENERATION SCHEDULE SETTINGS FORM */}
+            <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '2px solid var(--slate-border)' }}>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 800, color: 'var(--slate-text)', margin: '0 0 0.5rem 0' }}>
+                Payroll Generation & Lock Schedule
+              </h3>
+              <form onSubmit={e => { e.preventDefault(); alert("Payroll Lock & Generation rules updated!"); }} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div>
+                    <label className="form-label" style={{ fontWeight: 700 }}>Payroll Generation Date</label>
+                    <input type="text" className="form-input" defaultValue="25th of month" id="genDateInput" />
+                  </div>
+                  <div>
+                    <label className="form-label" style={{ fontWeight: 700 }}>Payroll Lock Date</label>
+                    <input type="text" className="form-input" defaultValue="30th of month" id="lockDateInput" />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div>
+                    <label className="form-label" style={{ fontWeight: 700 }}>Auto Lock</label>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', fontWeight: 700 }}>
+                        <input type="radio" name="autoLock" defaultChecked value="YES" /> YES
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', fontWeight: 700 }}>
+                        <input type="radio" name="autoLock" value="NO" /> NO
+                      </label>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="form-label" style={{ fontWeight: 700 }}>Allow Regeneration</label>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', fontWeight: 700 }}>
+                        <input type="radio" name="allowRegen" value="YES" /> YES
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', fontWeight: 700 }}>
+                        <input type="radio" name="allowRegen" defaultChecked value="NO" /> NO
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" className="btn btn-secondary" style={{ width: 'fit-content', fontSize: '0.8125rem' }}>
+                  Save Schedule Rules
+                </button>
+              </form>
+            </div>
+
+            {/* BUDGET WARNING & BLOCK PAYROLL CONTROLS FORM */}
+            <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '2px solid var(--slate-border)' }}>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 800, color: 'var(--slate-text)', margin: '0 0 0.5rem 0' }}>
+                Budget Warning & Over-Budget Lock Rules
+              </h3>
+              <form onSubmit={e => { e.preventDefault(); alert("Budget Threshold & Block Payroll rules updated!"); }} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div>
+                    <label className="form-label" style={{ fontWeight: 700 }}>Warning Threshold %</label>
+                    <input type="number" className="form-input" defaultValue={90} id="warnThresholdInput" />
+                  </div>
+                  <div>
+                    <label className="form-label" style={{ fontWeight: 700 }}>Critical Threshold %</label>
+                    <input type="number" className="form-input" defaultValue={100} id="critThresholdInput" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="form-label" style={{ fontWeight: 700 }}>Block Payroll on Budget Exceed</label>
+                  <div style={{ display: 'flex', gap: '1.5rem' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer' }}>
+                      <input type="radio" name="blockPayroll" defaultChecked value="YES" /> YES (Block Over-Budget Disbursement)
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer' }}>
+                      <input type="radio" name="blockPayroll" value="NO" /> NO
+                    </label>
+                  </div>
+                </div>
+
+                <button type="submit" className="btn btn-secondary" style={{ width: 'fit-content', fontSize: '0.8125rem' }}>
+                  Save Threshold Controls
+                </button>
+              </form>
+            </div>
+          </div>
+
+          {/* ATTENDANCE-TO-SALARY DEDUCTION MATRIX TABLE */}
+          <div className="card-base" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ borderBottom: '2px solid var(--slate-border)', paddingBottom: '0.75rem' }}>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 800, color: 'var(--slate-text)', margin: 0 }}>
+                Attendance-to-Salary Deduction Matrix
+              </h3>
+              <p style={{ fontSize: '0.75rem', color: 'var(--slate-muted)', margin: '0.125rem 0 0 0' }}>
+                Rule matrix linking attendance status to payroll deductions
+              </p>
+            </div>
+
+            <div className="table-container">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Attendance Status</th>
+                    <th>Salary Calculation Effect</th>
+                    <th>Policy Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { status: "Present", effect: "Full Salary", action: "100% Paid" },
+                    { status: "Approved Leave", effect: "Full Salary", action: "Paid Leave" },
+                    { status: "Official Duty (OD)", effect: "Full Salary", action: "Executive Duty" },
+                    { status: "Government Holiday", effect: "Full Salary", action: "Gazetted Holiday" },
+                    { status: "Absent", effect: "Deduct Salary", action: "Pro-rata Day Deduction" },
+                    { status: "Half Day", effect: "50% Deduction", action: "50% Pay Deduction" },
+                    { status: "Late", effect: "Warning", action: "Deduct after 3 Lates" }
+                  ].map((row, idx) => (
+                    <tr key={idx}>
+                      <td style={{ fontWeight: 700, color: '#0F172A' }}>{row.status}</td>
+                      <td style={{ fontWeight: 700, color: row.effect.includes('Deduct') || row.effect.includes('50%') ? '#DC2626' : row.effect.includes('Warning') ? '#D97706' : '#059669' }}>
+                        {row.effect}
+                      </td>
+                      <td style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--slate-muted)' }}>{row.action}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Salary Components & Deductions Roster Table */}
+            <div style={{ marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '2px solid var(--slate-border)' }}>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 800, color: 'var(--slate-text)', margin: '0 0 0.75rem 0' }}>
+                Salary Components & Deductions
+              </h3>
+
+              <div className="table-container">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Component Name</th>
+                      <th>Category</th>
+                      <th>Calculation Rule / Rate</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { name: "Basic Salary", type: "Base Pay", rule: "55% of Gross Salary", status: "Mandatory" },
+                      { name: "House Rent", type: "Allowance", rule: "20% of Gross Salary", status: "Active" },
+                      { name: "Medical", type: "Allowance", rule: "10% of Gross Salary", status: "Active" },
+                      { name: "Transport", type: "Allowance", rule: "5% of Gross Salary", status: "Active" },
+                      { name: "Special Allowance", type: "Allowance", rule: "4% Executive Duty", status: "Active" },
+                      { name: "Festival Bonus", type: "Bonus", rule: "3% Eid/Boishakhi", status: "Active" },
+                      { name: "Other Allowance", type: "Allowance", rule: "3% Miscellaneous", status: "Active" },
+                      { name: "Income Tax %", type: "Deduction", rule: `${salaryPolicy.incomeTaxRate}% of Monthly Gross`, status: "Deduction" },
+                      { name: "Provident Fund %", type: "Deduction", rule: `${salaryPolicy.providentFundRate}% of Basic Salary`, status: "Deduction" },
+                      { name: "Absent Deduction", type: "Deduction", rule: "Pro-rata Working Days", status: "Deduction" },
+                      { name: "Late Penalty", type: "Deduction", rule: "Deduct after 3 Lates", status: "Deduction" },
+                      { name: "Loan Deduction", type: "Deduction", rule: "Staff Housing/Vehicle Loan", status: "Deduction" },
+                      { name: "Other Deduction", type: "Deduction", rule: "Miscellaneous Penalty", status: "Deduction" }
+                    ].map((comp, idx) => (
+                      <tr key={idx}>
+                        <td style={{ fontWeight: 700, color: '#0F172A' }}>{comp.name}</td>
+                        <td>
+                          <span className={`badge ${comp.type === 'Deduction' ? 'badge-warning' : 'badge-info'}`} style={{ fontSize: '0.675rem' }}>{comp.type}</span>
+                        </td>
+                        <td style={{ fontSize: '0.8125rem', fontWeight: 600, color: comp.type === 'Deduction' ? '#DC2626' : '#059669' }}>{comp.rule}</td>
+                        <td>
+                          <span style={{
+                            fontSize: '0.7rem',
+                            fontWeight: 700,
+                            color: comp.type === 'Deduction' ? '#991B1B' : '#047857',
+                            backgroundColor: comp.type === 'Deduction' ? '#FEE2E2' : '#ECFDF5',
+                            padding: '0.15rem 0.5rem',
+                            borderRadius: '0.375rem'
+                          }}>
+                            {comp.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PHASE 2 MODAL: GOVERNMENT FINANCIAL ALLOCATION FOR SUPER ADMIN */}
       {isBudgetModalOpen && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           backgroundColor: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(4px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '1rem'
         }}>
-          <div className="animate-scale-in" style={{ backgroundColor: '#FFFFFF', borderRadius: '1rem', maxWidth: '460px', width: '100%', padding: '1.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-              <h3 style={{ fontSize: '1.125rem', fontWeight: 800 }}>Allocate Ministry Salary Budget</h3>
+          <div className="animate-scale-in" style={{ backgroundColor: '#FFFFFF', borderRadius: '1rem', maxWidth: '520px', width: '100%', padding: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.75rem' }}>
+              <div>
+                <h3 style={{ fontSize: '1.125rem', fontWeight: 800, margin: 0, color: '#0F172A' }}>Government Financial Allocation</h3>
+                <p style={{ fontSize: '0.75rem', color: 'var(--slate-muted)', margin: '0.125rem 0 0 0' }}>Ministry of Finance Revenue & ADP Allocation System</p>
+              </div>
               <button onClick={() => setIsBudgetModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={20} /></button>
             </div>
+
             <form onSubmit={handleSaveBudget} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label className="form-label">Select Ministry</label>
+                <label className="form-label" style={{ fontWeight: 700 }}>Target Ministry</label>
                 <select
                   className="form-select"
+                  style={{ fontWeight: 700 }}
                   value={budgetForm.ministryId}
                   onChange={e => setBudgetForm({ ...budgetForm, ministryId: Number(e.target.value) })}
                 >
@@ -926,32 +1273,60 @@ export default function Salary() {
                   ))}
                 </select>
               </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+                <div>
+                  <label className="form-label" style={{ fontWeight: 700 }}>Funding Source Category</label>
+                  <select className="form-select">
+                    <option value="gob">GOB Revenue Fund</option>
+                    <option value="adp">ADP Development Fund</option>
+                    <option value="special">Special Secretariat Grant</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="form-label" style={{ fontWeight: 700 }}>Fiscal Period</label>
+                  <input type="text" className="form-input" defaultValue="FY 2026-27 Q1" />
+                </div>
+              </div>
+
               <div>
-                <label className="form-label">Allocated Monthly Budget (BDT Taka)</label>
+                <label className="form-label" style={{ fontWeight: 700 }}>Government Sanction Order Ref No.</label>
+                <input type="text" className="form-input" defaultValue="GO-FIN-2026-0891" />
+              </div>
+
+              <div>
+                <label className="form-label" style={{ fontWeight: 700 }}>Allocated Monthly Budget (BDT Taka)</label>
                 <input
                   type="number"
                   required
                   className="form-input"
+                  style={{ fontSize: '1rem', fontWeight: 800, color: '#059669' }}
                   value={budgetForm.allocatedAmount}
                   onChange={e => setBudgetForm({ ...budgetForm, allocatedAmount: e.target.value })}
                 />
               </div>
-              <button type="submit" className="btn btn-primary" style={{ marginTop: '0.5rem' }}>Save & Allocate Budget</button>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.625rem', marginTop: '0.5rem', paddingTop: '0.75rem', borderTop: '1px solid #E2E8F0' }}>
+                <button type="button" onClick={() => setIsBudgetModalOpen(false)} className="btn btn-secondary" style={{ fontSize: '0.8125rem' }}>Cancel</button>
+                <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#059669', fontSize: '0.8125rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                  <Save size={16} /> Save Financial Allocation
+                </button>
+              </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* OFFICER SALARY DETAILS & UPDATE MODAL (PHASE 8 SCOPED) */}
+      {/* OFFICER SALARY DETAILS & UPDATE MODAL */}
       {selectedOfficerForSalary && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           backgroundColor: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(4px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '1rem'
         }}>
-          <div className="animate-scale-in" style={{ backgroundColor: '#FFFFFF', borderRadius: '1rem', maxWidth: '520px', width: '100%', padding: '1.5rem' }}>
+          <div className="animate-scale-in" style={{ backgroundColor: '#FFFFFF', borderRadius: '1rem', maxWidth: '580px', width: '100%', padding: '1.5rem', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3 style={{ fontSize: '1.125rem', fontWeight: 800 }}>Officer Salary Details & Update</h3>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 800 }}>Officer Salary Breakdown & Itemized Deductions</h3>
               <button onClick={() => setSelectedOfficerForSalary(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={20} /></button>
             </div>
 
@@ -968,85 +1343,108 @@ export default function Salary() {
                     </div>
                   </div>
 
-                  <div style={{ backgroundColor: '#F8FAFC', padding: '1rem', borderRadius: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8125rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Basic Salary (65%):</span><strong>{formatBDT(comp.basic)}</strong></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>House Rent Allowance (20%):</span><strong>+{formatBDT(comp.houseRent)}</strong></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Medical Allowance (10%):</span><strong>+{formatBDT(comp.medical)}</strong></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Transport Allowance (5%):</span><strong>+{formatBDT(comp.transport)}</strong></div>
-                    <hr style={{ borderColor: '#E2E8F0' }} />
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#DC2626' }}><span>Provident Fund (10% Basic):</span><strong>-{formatBDT(comp.pfDeduction)}</strong></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#DC2626' }}><span>Tax Deduction (5% Total):</span><strong>-{formatBDT(comp.taxDeduction)}</strong></div>
-                    <hr style={{ borderColor: '#E2E8F0' }} />
+                  {/* Itemized Components Roster */}
+                  <div style={{ backgroundColor: '#F8FAFC', padding: '1rem', borderRadius: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.375rem', fontSize: '0.8125rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Basic Salary (55%):</span><strong>{formatBDT(comp.basic)}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>House Rent (20%):</span><strong>+{formatBDT(comp.houseRent)}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Medical (10%):</span><strong>+{formatBDT(comp.medical)}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Transport (5%):</span><strong>+{formatBDT(comp.transport)}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Special Allowance (4%):</span><strong>+{formatBDT(comp.specialAllowance)}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Festival Bonus (3%):</span><strong>+{formatBDT(comp.festivalBonus)}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Other Allowance (3%):</span><strong>+{formatBDT(comp.otherAllowance)}</strong></div>
+                    <hr style={{ borderColor: '#E2E8F0', margin: '0.25rem 0' }} />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#DC2626' }}><span>Income Tax ({salaryPolicy.incomeTaxRate}%):</span><strong>-{formatBDT(comp.taxDeduction)}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#DC2626' }}><span>Provident Fund ({salaryPolicy.providentFundRate}% Basic):</span><strong>-{formatBDT(comp.pfDeduction)}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#DC2626' }}><span>Absent Deduction:</span><strong>-{formatBDT(comp.absentDeduction)}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#DC2626' }}><span>Late Penalty:</span><strong>-{formatBDT(comp.latePenalty)}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#DC2626' }}><span>Loan Deduction:</span><strong>-{formatBDT(comp.loanDeduction)}</strong></div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', color: '#DC2626' }}><span>Other Deduction:</span><strong>-{formatBDT(comp.otherDeduction)}</strong></div>
+                    <hr style={{ borderColor: '#E2E8F0', margin: '0.25rem 0' }} />
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1rem', color: '#059669', fontWeight: 800 }}>
                       <span>Net Monthly Salary:</span><span>{formatBDT(comp.netSalary)}</span>
                     </div>
                   </div>
 
-                  {/* Edit Salary Form (Flowchart Spec: Basic, Allowances, Deductions, Auto Net Salary) */}
+                  {/* Edit Salary Form */}
                   {isSuperAdmin ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem', paddingTop: '0.5rem', borderTop: '1px solid #E2E8F0' }}>
-                      <h4 style={{ margin: 0, fontSize: '0.9375rem', fontWeight: 800, color: 'var(--slate-text)' }}>Edit Officer Salary Parameters</h4>
+                      <h4 style={{ margin: 0, fontSize: '0.9375rem', fontWeight: 800, color: 'var(--slate-text)' }}>Edit Itemized Allowances & Deductions</h4>
                       
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                         <div>
-                          <label className="form-label" style={{ fontSize: '0.75rem' }}>Basic Salary (65%)</label>
+                          <label className="form-label" style={{ fontSize: '0.75rem', fontWeight: 700 }}>Basic Salary</label>
                           <input
                             type="number"
                             className="form-input"
-                            style={{ fontSize: '0.8125rem' }}
+                            style={{ fontSize: '0.8125rem', fontWeight: 700 }}
                             defaultValue={comp.basic}
-                            id="editBasicSalaryInput"
-                            onChange={() => {
-                              const b = Number(document.getElementById('editBasicSalaryInput').value || 0);
-                              const a = Number(document.getElementById('editAllowancesInput').value || 0);
-                              const d = Number(document.getElementById('editDeductionsInput').value || 0);
-                              const net = b + a - d;
-                              document.getElementById('editAutoNetSalaryDisplay').innerText = formatBDT(net);
-                            }}
+                            id="editBasicInput"
                           />
                         </div>
                         <div>
-                          <label className="form-label" style={{ fontSize: '0.75rem' }}>Total Allowances (+)</label>
+                          <label className="form-label" style={{ fontSize: '0.75rem', fontWeight: 700 }}>House Rent</label>
                           <input
                             type="number"
                             className="form-input"
-                            style={{ fontSize: '0.8125rem' }}
-                            defaultValue={comp.houseRent + comp.medical + comp.transport}
-                            id="editAllowancesInput"
-                            onChange={() => {
-                              const b = Number(document.getElementById('editBasicSalaryInput').value || 0);
-                              const a = Number(document.getElementById('editAllowancesInput').value || 0);
-                              const d = Number(document.getElementById('editDeductionsInput').value || 0);
-                              const net = b + a - d;
-                              document.getElementById('editAutoNetSalaryDisplay').innerText = formatBDT(net);
-                            }}
+                            style={{ fontSize: '0.8125rem', fontWeight: 700 }}
+                            defaultValue={comp.houseRent}
+                            id="editHouseRentInput"
                           />
                         </div>
                       </div>
 
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                         <div>
-                          <label className="form-label" style={{ fontSize: '0.75rem' }}>Total Deductions (-)</label>
+                          <label className="form-label" style={{ fontSize: '0.75rem', fontWeight: 700 }}>Medical Allowance</label>
                           <input
                             type="number"
                             className="form-input"
-                            style={{ fontSize: '0.8125rem' }}
-                            defaultValue={comp.pfDeduction + comp.taxDeduction}
-                            id="editDeductionsInput"
-                            onChange={() => {
-                              const b = Number(document.getElementById('editBasicSalaryInput').value || 0);
-                              const a = Number(document.getElementById('editAllowancesInput').value || 0);
-                              const d = Number(document.getElementById('editDeductionsInput').value || 0);
-                              const net = b + a - d;
-                              document.getElementById('editAutoNetSalaryDisplay').innerText = formatBDT(net);
-                            }}
+                            style={{ fontSize: '0.8125rem', fontWeight: 700 }}
+                            defaultValue={comp.medical}
+                            id="editMedicalInput"
                           />
                         </div>
-                        <div style={{ backgroundColor: '#ECFDF5', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: '1px solid #A7F3D0' }}>
-                          <label className="form-label" style={{ fontSize: '0.7rem', color: '#047857', margin: 0 }}>Auto Net Salary</label>
-                          <p id="editAutoNetSalaryDisplay" style={{ fontSize: '1rem', fontWeight: 800, color: '#059669', margin: '0.125rem 0 0 0' }}>
-                            {formatBDT(comp.netSalary)}
-                          </p>
+                        <div>
+                          <label className="form-label" style={{ fontSize: '0.75rem', fontWeight: 700 }}>Transport Allowance</label>
+                          <input
+                            type="number"
+                            className="form-input"
+                            style={{ fontSize: '0.8125rem', fontWeight: 700 }}
+                            defaultValue={comp.transport}
+                            id="editTransportInput"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Deductions Inputs */}
+                      <h5 style={{ margin: '0.25rem 0 0 0', fontSize: '0.8125rem', fontWeight: 800, color: '#DC2626' }}>Itemized Deductions</h5>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem' }}>
+                        <div>
+                          <label className="form-label" style={{ fontSize: '0.7rem' }}>Income Tax</label>
+                          <input type="number" className="form-input" style={{ fontSize: '0.75rem' }} defaultValue={comp.taxDeduction} id="editTaxInput" />
+                        </div>
+                        <div>
+                          <label className="form-label" style={{ fontSize: '0.7rem' }}>Provident Fund</label>
+                          <input type="number" className="form-input" style={{ fontSize: '0.75rem' }} defaultValue={comp.pfDeduction} id="editPfInput" />
+                        </div>
+                        <div>
+                          <label className="form-label" style={{ fontSize: '0.7rem' }}>Absent Deduction</label>
+                          <input type="number" className="form-input" style={{ fontSize: '0.75rem' }} defaultValue={0} id="editAbsentInput" />
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem' }}>
+                        <div>
+                          <label className="form-label" style={{ fontSize: '0.7rem' }}>Late Penalty</label>
+                          <input type="number" className="form-input" style={{ fontSize: '0.75rem' }} defaultValue={0} id="editLateInput" />
+                        </div>
+                        <div>
+                          <label className="form-label" style={{ fontSize: '0.7rem' }}>Loan Deduction</label>
+                          <input type="number" className="form-input" style={{ fontSize: '0.75rem' }} defaultValue={0} id="editLoanInput" />
+                        </div>
+                        <div>
+                          <label className="form-label" style={{ fontSize: '0.7rem' }}>Other Deduction</label>
+                          <input type="number" className="form-input" style={{ fontSize: '0.75rem' }} defaultValue={0} id="editOtherDedInput" />
                         </div>
                       </div>
 
@@ -1058,12 +1456,25 @@ export default function Salary() {
                         <button
                           type="button"
                           onClick={() => {
-                            const b = Number(document.getElementById('editBasicSalaryInput').value || 0);
-                            const a = Number(document.getElementById('editAllowancesInput').value || 0);
-                            const d = Number(document.getElementById('editDeductionsInput').value || 0);
-                            const gross = Math.round((b + a) / 0.95);
+                            const b = Number(document.getElementById('editBasicInput').value || 0);
+                            const hr = Number(document.getElementById('editHouseRentInput').value || 0);
+                            const med = Number(document.getElementById('editMedicalInput').value || 0);
+                            const tr = Number(document.getElementById('editTransportInput').value || 0);
+
+                            const tax = Number(document.getElementById('editTaxInput').value || 0);
+                            const pf = Number(document.getElementById('editPfInput').value || 0);
+                            const abs = Number(document.getElementById('editAbsentInput').value || 0);
+                            const late = Number(document.getElementById('editLateInput').value || 0);
+                            const loan = Number(document.getElementById('editLoanInput').value || 0);
+                            const other = Number(document.getElementById('editOtherDedInput').value || 0);
+
+                            const totalAllow = hr + med + tr;
+                            const totalDed = tax + pf + abs + late + loan + other;
+                            const net = b + totalAllow - totalDed;
+
+                            const gross = Math.round((b + totalAllow) / 0.95);
                             selectedOfficerForSalary.monthlySalary = gross;
-                            alert(`Salary parameters saved for ${selectedOfficerForSalary.name}! Net Monthly: ৳ ${(b + a - d).toLocaleString()}`);
+                            alert(`Saved itemized salary & deduction parameters for ${selectedOfficerForSalary.name}! Net Monthly: ৳ ${net.toLocaleString()}`);
                             setSelectedOfficerForSalary({ ...selectedOfficerForSalary, monthlySalary: gross });
                           }}
                           className="btn btn-primary"

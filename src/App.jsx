@@ -7,15 +7,23 @@ import MinistryList from './pages/ministry/MinistryList';
 import EmployeeList from './pages/employee/EmployeeList';
 import EmployeeCreate from './pages/employee/EmployeeCreate';
 import EmployeeChart from './pages/employee/EmployeeChart';
-import AttendanceList from './pages/attendance/AttendanceList';
+
+// Attendance Suite Components
+import AttendanceDashboard from './pages/attendance/AttendanceDashboard';
+import DailyAttendance from './pages/attendance/DailyAttendance';
+import MonthlySummary from './pages/attendance/MonthlySummary';
+import AttendanceApproval from './pages/attendance/AttendanceApproval';
+import AttendanceDevices from './pages/attendance/AttendanceDevices';
+import AttendanceReports from './pages/attendance/AttendanceReports';
 import AttendanceIndividual from './pages/attendance/AttendanceIndividual';
-import AttendanceSummary from './pages/attendance/AttendanceSummary';
 import AttendanceSheet from './pages/attendance/AttendanceSheet';
+
 import Leave from './pages/leave/Leave';
 import Overtime from './pages/overtime/Overtime';
 import Reports from './pages/reports/Reports';
 import Settings from './pages/settings/Settings';
 import Salary from './pages/salary/Salary';
+import ConfigureSalary from './pages/salary/configure/ConfigureSalary';
 
 export default function App() {
   return (
@@ -30,12 +38,18 @@ export default function App() {
         <Route path="/employee/chart" element={<EmployeeChart />} />
         <Route path="/employee" element={<Navigate to="/employee/list" replace />} />
         
-        {/* Attendance Sub-routes */}
-        <Route path="/attendance/list" element={<AttendanceList />} />
+        {/* Attendance Sub-routes - Dashboard is Landing Page */}
+        <Route path="/attendance/dashboard" element={<AttendanceDashboard />} />
+        <Route path="/attendance/daily" element={<DailyAttendance />} />
+        <Route path="/attendance/list" element={<DailyAttendance />} />
+        <Route path="/attendance/monthly" element={<MonthlySummary />} />
+        <Route path="/attendance/summary" element={<MonthlySummary />} />
+        <Route path="/attendance/approval" element={<AttendanceApproval />} />
+        <Route path="/attendance/devices" element={<AttendanceDevices />} />
+        <Route path="/attendance/reports" element={<AttendanceReports />} />
         <Route path="/attendance/individual" element={<AttendanceIndividual />} />
-        <Route path="/attendance/summary" element={<AttendanceSummary />} />
         <Route path="/attendance/sheet" element={<AttendanceSheet />} />
-        <Route path="/attendance" element={<Navigate to="/attendance/list" replace />} />
+        <Route path="/attendance" element={<Navigate to="/attendance/dashboard" replace />} />
         
         {/* Leave Sub-routes */}
         <Route path="/leave/apply" element={<Leave initialTab="apply" />} />
@@ -47,6 +61,7 @@ export default function App() {
 
         {/* Salary Module */}
         <Route path="/salary" element={<Salary />} />
+        <Route path="/salary/configure" element={<ConfigureSalary />} />
         
         {/* Reports */}
         <Route path="/reports" element={<Reports />} />

@@ -81,13 +81,15 @@ export default function Sidebar() {
           ]
         },
         { 
-          label: "Attendance Logs", 
+          label: "Attendance", 
           icon: CalendarCheck,
           children: [
-            { to: "/attendance/list", label: "Daily Attendance" },
-            { to: "/attendance/individual", label: "Individual Record" },
-            { to: "/attendance/summary", label: "Monthly Summary" },
-            { to: "/attendance/sheet", label: "Attendance Sheet" }
+            { to: "/attendance/dashboard", label: "Dashboard" },
+            { to: "/attendance/daily", label: "Daily Attendance" },
+            { to: "/attendance/approval", label: "Attendance Approval" },
+            { to: "/attendance/monthly", label: "Monthly Summary" },
+            { to: "/attendance/devices", label: "Attendance Devices" },
+            { to: "/attendance/reports", label: "Attendance Reports" }
           ]
         },
         { 
@@ -99,7 +101,7 @@ export default function Sidebar() {
           ]
         },
         { to: "/overtime", label: "Overtime Duty", icon: Clock },
-        { to: "/salary", label: "Salary Module", icon: Banknote },
+        { to: "/salary", label: "Salary", icon: Banknote },
         { to: "/settings", label: "Settings & Control", icon: SettingsIcon },
         { to: "/reports", label: "Government Reports", icon: BarChart3 },
       ]

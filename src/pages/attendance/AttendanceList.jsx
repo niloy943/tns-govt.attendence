@@ -189,7 +189,27 @@ export default function AttendanceList() {
               <option value="Late">Late</option>
               <option value="Absent">Absent</option>
               <option value="Half Day">Half Day</option>
-              <option value="On Duty">Official Duty (OD)</option>
+              <option value="On Duty">Official Duty</option>
+            </select>
+          </div>
+
+          {/* Attendance Source Filter (All 7 Sources) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Cpu size={18} style={{ color: 'var(--indigo)' }} />
+            <select
+              value={selectedSource || 'all'}
+              onChange={e => setSelectedSource(e.target.value)}
+              className="form-input"
+              style={{ width: 'auto', fontSize: '0.875rem', fontWeight: 600 }}
+            >
+              <option value="all">All Devices / Sources</option>
+              <option value="Fingerprint">Fingerprint</option>
+              <option value="Face Recognition">Face Recognition</option>
+              <option value="ID Card">ID Card</option>
+              <option value="QR Code">QR Code</option>
+              <option value="Manual">Manual</option>
+              <option value="CSV Import">CSV Import</option>
+              <option value="API Sync">API Sync</option>
             </select>
           </div>
         </div>

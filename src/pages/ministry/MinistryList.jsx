@@ -282,7 +282,7 @@ export default function MinistryList() {
                           </div>
                         </td>
                         <td style={{ color: 'var(--slate-muted)', fontSize: '0.8125rem' }}>{m.city || "Bangladesh Secretariat, Dhaka"}</td>
-                        <td style={{ fontWeight: 700, color: '#059669' }}>{m.employeeCount || 24} Officers</td>
+                        <td style={{ fontWeight: 700, color: '#059669' }}>{m.employeeCount || 24}</td>
                         <td>
                           <StatusBadge status={m.status || "Active"} />
                         </td>
@@ -376,7 +376,7 @@ export default function MinistryList() {
                             <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--slate-muted)' }}>{d.headDesignation}</p>
                           </div>
                         </td>
-                        <td style={{ fontWeight: 700, color: '#059669' }}>{d.staffCount} Staff</td>
+                        <td style={{ fontWeight: 700, color: '#059669' }}>{d.staffCount}</td>
                         <td>
                           <StatusBadge status={d.status} />
                         </td>
