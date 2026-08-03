@@ -84,8 +84,7 @@ export default function Sidebar() {
         }}>
           <ShieldAlert size={16} style={{ color: '#60A5FA' }} />
           <div style={{ overflow: 'hidden' }}>
-            <p style={{ fontSize: '0.7rem', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Active Role</p>
-            <p style={{ fontSize: '0.775rem', fontWeight: 600, color: '#E2E8F0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#E2E8F0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {currentUser.roleLabel}
             </p>
           </div>
