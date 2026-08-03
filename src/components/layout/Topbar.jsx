@@ -1,9 +1,28 @@
 import React from 'react';
-import { Search, Bell, Shield } from 'lucide-react';
+import { Search, Bell, Landmark, Building, Layers } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { dummyMinistries } from '../../data/dummy/ministries';
 
 export default function Topbar() {
-  const { currentUser, mockUsers, switchUser } = useAuth();
+  const { 
+    currentUser, 
+    viewLevel, 
+    setCentralView, 
+    setMinistryView, 
+    setDepartmentView,
+    selectedMinistryId, 
+    setSelectedMinistryId,
+    selectedDepartmentId,
+    setSelectedDepartmentId
+  } = useAuth();
+
+  const mockDepartments = [
+    { id: 1, name: "HR & Admin" },
+    { id: 2, name: "Finance & Accounts" },
+    { id: 3, name: "Social Welfare Dept" },
+    { id: 4, name: "Women & Child Affairs" },
+    { id: 5, name: "ICT & Digital Infra" }
+  ];
 
   return (
     <header style={{
@@ -18,60 +37,108 @@ export default function Topbar() {
       top: 0,
       zIndex: 10
     }}>
-      {/* Search Input */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, maxWidth: '24rem' }}>
-        <div style={{ position: 'relative', width: '100%' }}>
-          <Search size={18} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
-          <input
-            type="text"
-            placeholder="Search employees, ministries, requests..."
-            className="form-input"
-            style={{ paddingLeft: '2.5rem', height: '38px', backgroundColor: '#F8FAFC' }}
-          />
-        </div>
+      {/* 3-TIER LEVEL SWITCHER: Central -> Ministry -> Department */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', backgroundColor: '#F1F5F9', padding: '0.25rem', borderRadius: '0.5rem', border: '1px solid #E2E8F0' }}>
+        <button
+          onClick={setCentralView}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.375rem',
+            padding: '0.375rem 0.75rem',
+            borderRadius: '0.375rem',
+            border: 'none',
+            fontSize: '0.775rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            backgroundColor: viewLevel === 'central' ? 'var(--primary)' : 'transparent',
+            color: viewLevel === 'central' ? '#FFFFFF' : '#475569',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <Landmark size={14} />
+          Central (All Ministries)
+        </button>
+
+        <button
+          onClick={() => setMinistryView(selectedMinistryId === 'all' ? 1 : selectedMinistryId)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.375rem',
+            padding: '0.375rem 0.75rem',
+            borderRadius: '0.375rem',
+            border: 'none',
+            fontSize: '0.775rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            backgroundColor: viewLevel === 'ministry' ? 'var(--primary)' : 'transparent',
+            color: viewLevel === 'ministry' ? '#FFFFFF' : '#475569',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <Building size={14} />
+          Ministry
+        </button>
+
+        <button
+          onClick={() => setDepartmentView(selectedDepartmentId === 'all' ? 1 : selectedDepartmentId)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.375rem',
+            padding: '0.375rem 0.75rem',
+            borderRadius: '0.375rem',
+            border: 'none',
+            fontSize: '0.775rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            backgroundColor: viewLevel === 'department' ? 'var(--primary)' : 'transparent',
+            color: viewLevel === 'department' ? '#FFFFFF' : '#475569',
+            transition: 'all 0.15s ease'
+          }}
+        >
+          <Layers size={14} />
+          Department
+        </button>
       </div>
 
-      {/* Right Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-        {/* Active Role Selector */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#F1F5F9', padding: '0.375rem 0.75rem', borderRadius: '0.5rem' }}>
-          <Shield size={16} style={{ color: 'var(--primary)' }} />
-          <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--slate-muted)', whiteSpace: 'nowrap' }}>
-            Role View:
-          </label>
-          <select
-            value={currentUser.id}
-            onChange={(e) => switchUser(e.target.value)}
-            style={{
-              border: 'none',
-              backgroundColor: 'transparent',
-              fontSize: '0.8125rem',
-              fontWeight: 600,
-              color: 'var(--slate-text)',
-              outline: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            {mockUsers.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name} ({u.roleLabel})
-              </option>
-            ))}
-          </select>
-        </div>
+      {/* Dynamic Dropdowns & Right Controls */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        {viewLevel === 'ministry' && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#F8FAFC', padding: '0.375rem 0.75rem', borderRadius: '0.5rem', border: '1px solid #CBD5E1' }}>
+            <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--slate-muted)' }}>Ministry:</label>
+            <select
+              value={selectedMinistryId}
+              onChange={(e) => setSelectedMinistryId(e.target.value)}
+              style={{ border: 'none', backgroundColor: 'transparent', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--slate-text)', outline: 'none', cursor: 'pointer' }}
+            >
+              {dummyMinistries.map((m) => (
+                <option key={m.id} value={m.id}>{m.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {viewLevel === 'department' && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#F8FAFC', padding: '0.375rem 0.75rem', borderRadius: '0.5rem', border: '1px solid #CBD5E1' }}>
+            <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--slate-muted)' }}>Department:</label>
+            <select
+              value={selectedDepartmentId}
+              onChange={(e) => setSelectedDepartmentId(e.target.value)}
+              style={{ border: 'none', backgroundColor: 'transparent', fontSize: '0.8125rem', fontWeight: 600, color: 'var(--slate-text)', outline: 'none', cursor: 'pointer' }}
+            >
+              {mockDepartments.map((d) => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Notifications Icon */}
         <button className="btn btn-ghost" style={{ position: 'relative', padding: '0.5rem' }}>
           <Bell size={20} />
-          <span style={{
-            position: 'absolute',
-            top: '4px',
-            right: '4px',
-            width: '8px',
-            height: '8px',
-            borderRadius: '9999px',
-            backgroundColor: 'var(--rose)'
-          }}></span>
+          <span style={{ position: 'absolute', top: '4px', right: '4px', width: '8px', height: '8px', borderRadius: '9999px', backgroundColor: 'var(--rose)' }}></span>
         </button>
 
         {/* User Profile */}

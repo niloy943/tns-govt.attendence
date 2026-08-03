@@ -37,6 +37,31 @@ export const mockUsers = [
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(mockUsers[0]);
+  
+  // 3-tier view state: 'central' | 'ministry' | 'department'
+  const [viewLevel, setViewLevel] = useState('central');
+  const [selectedMinistryId, setSelectedMinistryId] = useState("all");
+  const [selectedDepartmentId, setSelectedDepartmentId] = useState("all");
+
+  const setCentralView = () => {
+    setViewLevel('central');
+    setSelectedMinistryId('all');
+    setSelectedDepartmentId('all');
+  };
+
+  const setMinistryView = (ministryId) => {
+    setViewLevel('ministry');
+    setSelectedMinistryId(ministryId || 1);
+    setSelectedDepartmentId('all');
+  };
+
+  const setDepartmentView = (departmentId) => {
+    setViewLevel('department');
+    if (selectedMinistryId === 'all') {
+      setSelectedMinistryId(1);
+    }
+    setSelectedDepartmentId(departmentId || 1);
+  };
 
   const switchUser = (userId) => {
     const target = mockUsers.find(u => u.id === Number(userId));
@@ -54,7 +79,21 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, mockUsers, switchUser, hasRole }}>
+    <AuthContext.Provider value={{
+      currentUser,
+      mockUsers,
+      switchUser,
+      hasRole,
+      viewLevel,
+      setViewLevel,
+      selectedMinistryId,
+      setSelectedMinistryId,
+      selectedDepartmentId,
+      setSelectedDepartmentId,
+      setCentralView,
+      setMinistryView,
+      setDepartmentView
+    }}>
       {children}
     </AuthContext.Provider>
   );
