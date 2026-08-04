@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+
+define('LARAVEL_START', microtime(true));
+
+// Register The Auto Loader
+if (!file_exists(__DIR__.'/vendor/autoload.php')) {
+    fwrite(STDERR, "Error: vendor/autoload.php is missing. Please run 'composer install --ignore-platform-reqs' first.\n");
+    exit(1);
+}
+
+require __DIR__.'/vendor/autoload.php';
+
+// Bootstrap Laravel and handle the command
+$app = require_once __DIR__.'/bootstrap/app.php';
+
+$status = $app->handleCommand(new Symfony\Component\Console\Input\ArgvInput);
+
+exit($status);
