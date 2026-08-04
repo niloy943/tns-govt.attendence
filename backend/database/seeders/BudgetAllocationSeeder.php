@@ -17,12 +17,13 @@ class BudgetAllocationSeeder extends Seeder
                 [
                     'ministry_id' => $ministry->id,
                     'fiscal_year' => '2025-2026',
+                    'funding_source' => 'gob_revenue',
                 ],
                 [
-                    'total_allocation' => 50000000.00,
-                    'spent_amount' => 12500000.00,
-                    'remaining_amount' => 37500000.00,
-                    'payroll_cap' => 35000000.00,
+                    'allocated_amount' => 50000000.00,
+                    'utilized_amount' => 12500000.00,
+                    'warning_threshold_pct' => 90,
+                    'critical_threshold_pct' => 100,
                 ]
             );
         }

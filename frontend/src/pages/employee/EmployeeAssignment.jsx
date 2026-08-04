@@ -92,11 +92,8 @@ export default function EmployeeAssignment() {
           </div>
           <div>
             <h1 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#F8FAFC', margin: 0 }}>
-              Organizational Assignment & Wing Mapping
+              Assignment & Mapping
             </h1>
-            <p style={{ fontSize: '0.8125rem', color: '#94A3B8', margin: '0.15rem 0 0 0' }}>
-              Assign officers across Ministry, Department, Wing, Section & Command Hierarchy
-            </p>
           </div>
         </div>
       </div>

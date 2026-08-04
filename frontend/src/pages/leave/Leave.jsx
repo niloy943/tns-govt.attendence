@@ -226,7 +226,8 @@ export default function Leave({ initialTab = 'apply' }) {
           </div>
 
           <div className="table-container">
-            <table className="data-table">
+            {filteredRequests.length > 0 ? (
+              <table className="data-table">
               <thead>
                 <tr>
                   <th>Applicant</th>
@@ -299,6 +300,9 @@ export default function Leave({ initialTab = 'apply' }) {
                   </tr>
                 ))}
               </tbody>
+            </table>
+            ) : (
+              <EmptyState title="No Leave Requests" description="No leave requests match the selected category." />
             )}
           </div>
         </div>

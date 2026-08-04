@@ -7,9 +7,12 @@ const USE_DUMMY = import.meta.env.VITE_USE_DUMMY_DATA === "true";
 export function useEmployees() {
   return useQuery({
     queryKey: ["employees"],
-    queryFn: USE_DUMMY
-      ? () => Promise.resolve([...dummyEmployees])
-      : fetchEmployees,
+    queryFn: async () => {
+      const rawData = USE_DUMMY
+        ? await Promise.resolve([...dummyEmployees])
+        : await fetchEmployees();
+      return Array.isArray(rawData) ? rawData : (rawData?.data || []);
+    }
   });
 }
 

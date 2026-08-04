@@ -39,6 +39,8 @@
 }
 
 body {
+  background-image: url('https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/n/axvjbnqprylg/b/V2Ministry/o/npf-themes/theme_2025/assets/images/bg_main_july.gif');
+  background-repeat: repeat;
   background-color: var(--bg-app);
   color: var(--slate-text);
   min-height: 100vh;
@@ -288,5 +290,15 @@ body {
   .card-base {
     border: none !important;
     box-shadow: none !important;
+  }
+}
+
+/* Spinner Keyframes */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }

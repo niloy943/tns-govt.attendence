@@ -1,6 +1,8 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import DashboardShell from './components/layout/DashboardShell';
+import { useAuth } from './context/AuthContext';
+import Login from './pages/Login';
 
 import Dashboard from './pages/Dashboard';
 import MinistryList from './pages/ministry/MinistryList';
@@ -33,9 +35,48 @@ import Salary from './pages/salary/Salary';
 import ConfigureSalary from './pages/salary/configure/ConfigureSalary';
 
 export default function App() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        backgroundColor: '#0F172A',
+        color: '#FFFFFF',
+        fontSize: '1rem',
+        fontWeight: 600,
+        fontFamily: 'system-ui, -apple-system, sans-serif'
+      }}>
+        <div style={{
+          border: '4px solid rgba(255, 255, 255, 0.1)',
+          borderTop: '4px solid #059669',
+          borderRadius: '50%',
+          width: '30px',
+          height: '30px',
+          animation: 'spin 1s linear infinite',
+          marginRight: '0.75rem'
+        }} />
+        <span>Verifying Security Session...</span>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    );
+  }
+
   return (
     <DashboardShell>
       <Routes>
+        <Route path="/login" element={<Navigate to="/" replace />} />
         <Route path="/" element={<Dashboard />} />
         <Route path="/ministry" element={<MinistryList />} />
         

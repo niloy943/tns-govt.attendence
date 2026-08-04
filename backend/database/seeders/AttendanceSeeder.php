@@ -19,17 +19,14 @@ class AttendanceSeeder extends Seeder
             AttendanceRecord::updateOrCreate(
                 [
                     'employee_id' => $employee->id,
-                    'date' => $today,
+                    'attendance_date' => $today,
                 ],
                 [
-                    'ministry_id' => $employee->ministry_id,
-                    'check_in' => '08:55:00',
-                    'check_out' => '17:05:00',
-                    'status' => 'present',
-                    'verification_source' => 'face_recognition',
-                    'approval_status' => 'approved',
-                    'reviewed_at' => now(),
-                    'approved_at' => now(),
+                    'check_in_time' => '08:55:00',
+                    'check_out_time' => '17:05:00',
+                    'source' => 'face_recognition',
+                    'status' => 'approved',
+                    'remarks' => 'Auto-present seeder log',
                 ]
             );
         }

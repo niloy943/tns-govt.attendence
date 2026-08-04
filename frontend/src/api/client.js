@@ -22,8 +22,23 @@ export async function apiClient(endpoint, { body, ...customConfig } = {}) {
     config.body = JSON.stringify(body);
   }
 
+  let url = `${API_BASE_URL}${endpoint}`;
+  if (customConfig.params) {
+    const cleanParams = {};
+    Object.entries(customConfig.params).forEach(([key, val]) => {
+      if (val !== undefined && val !== null && val !== '') {
+        cleanParams[key] = val;
+      }
+    });
+    const searchParams = new URLSearchParams(cleanParams);
+    const queryString = searchParams.toString();
+    if (queryString) {
+      url += `?${queryString}`;
+    }
+  }
+
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    const response = await fetch(url, config);
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `API Request Failed with status ${response.status}`);

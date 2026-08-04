@@ -15,24 +15,29 @@ class PayrollBudgetTest extends TestCase
 
     public function test_payroll_generation_blocked_when_exceeding_budget_cap(): void
     {
-        $ministry = Ministry::create(['name' => 'Ministry of Agriculture', 'code' => 'MOA', 'budget_allocation' => 100000]);
+        $ministry = Ministry::create(['name' => 'Ministry of Agriculture', 'code' => 'MOA']);
+
+        $fiscalYear = now()->month >= 7
+            ? now()->year.'-'.(now()->year + 1)
+            : (now()->year - 1).'-'.now()->year;
 
         BudgetAllocation::create([
             'ministry_id' => $ministry->id,
-            'fiscal_year' => '2025-2026',
-            'total_allocation' => 50000.00,
-            'spent_amount' => 45000.00,
-            'remaining_amount' => 5000.00,
-            'payroll_cap' => 5000.00, // Small cap
+            'fiscal_year' => $fiscalYear,
+            'funding_source' => 'gob_revenue',
+            'allocated_amount' => 50000.00,
+            'utilized_amount' => 45000.00,
+            'warning_threshold_pct' => 90,
+            'critical_threshold_pct' => 100,
         ]);
 
-        Employee::create([
+        $employee = Employee::create([
             'ministry_id' => $ministry->id,
             'name' => 'Officer One',
-            'cadre_id' => 'CAD-AG-01',
+            'employee_code' => 'CAD-AG-01',
             'designation' => 'Director',
             'email' => 'officer@moa.gov.bd',
-            'base_salary' => 80000.00, // Exceeds 5000 cap
+            'basic_salary' => 80000.00, // Exceeds remaining 5000 budget
         ]);
 
         $admin = User::create([
@@ -45,11 +50,13 @@ class PayrollBudgetTest extends TestCase
 
         $response = $this->actingAs($admin, 'sanctum')
             ->postJson('/api/payroll/generate', [
-                'ministry_id' => $ministry->id,
-                'month' => '2026-01',
+                'employee_id' => $employee->id,
+                'month' => now()->month,
+                'year' => now()->year,
+                'items' => [],
             ]);
 
         $response->assertStatus(422);
-        $response->assertJsonFragment(['error' => 'Payroll generation exceeds budget cap allocation']);
+        $response->assertJsonValidationErrors(['budget']);
     }
 }

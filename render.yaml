@@ -1,0 +1,70 @@
+services:
+  # 1. Laravel Backend Web Service
+  - type: web
+    name: tns-hrms-backend
+    env: php
+    plan: free
+    rootDir: backend
+    buildCommand: composer install --no-dev --optimize-autoloader
+    startCommand: php artisan migrate --force && php artisan serve --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        sync: false # Render will prompt you to generate or paste a key, or you can use: base64:Dg2aIwmzbwoN1b4qC+lIAMP3DTipFzrBvasSo15PWIY=
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: tns-hrms-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: tns-hrms-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: tns-hrms-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: tns-hrms-db
+          property: username
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: tns-hrms-db
+          property: password
+
+  # 2. React Frontend Static Site
+  - type: web
+    name: tns-hrms-frontend
+    env: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: max-age=31536000
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          type: web
+          name: tns-hrms-backend
+          property: url
+          suffix: /api
+      - key: VITE_USE_DUMMY_DATA
+        value: "false"
+
+databases:
+  # 3. PostgreSQL Database
+  - name: tns-hrms-db
+    plan: free
+    postgresVersion: "15"

@@ -80,7 +80,7 @@ export default function Sidebar() {
             { to: "/employee/dashboard", label: "Dashboard" },
             { to: "/employee/list", label: "Employee Directory" },
             { to: "/employee/create", label: "Add Employee" },
-            { to: "/employee/assignment", label: "Organizational Assignment" },
+            { to: "/employee/assignment", label: "Assignment & Mapping" },
             { to: "/employee/transfer", label: "Employee Transfer" },
             { to: "/employee/status", label: "Employee Status" },
             { to: "/employee/reports", label: "Reports" },
@@ -160,24 +160,26 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* Role Badge */}
-      <div style={{ padding: '0.875rem 1.25rem 0.375rem 1.25rem' }}>
-        <div style={{
-          backgroundColor: '#1E293B',
-          borderRadius: '0.5rem',
-          padding: '0.4rem 0.625rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem'
-        }}>
-          <ShieldAlert size={15} style={{ color: '#60A5FA' }} />
-          <div style={{ overflow: 'hidden' }}>
-            <p style={{ fontSize: '0.775rem', fontWeight: 600, color: '#E2E8F0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {currentUser.roleLabel}
-            </p>
+      {/* Role Badge - Hidden for Super Admin */}
+      {currentUser.role !== 'super_admin' && (
+        <div style={{ padding: '0.875rem 1.25rem 0.375rem 1.25rem' }}>
+          <div style={{
+            backgroundColor: '#1E293B',
+            borderRadius: '0.5rem',
+            padding: '0.4rem 0.625rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}>
+            <ShieldAlert size={15} style={{ color: '#60A5FA' }} />
+            <div style={{ overflow: 'hidden' }}>
+              <p style={{ fontSize: '0.775rem', fontWeight: 600, color: '#E2E8F0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {currentUser.roleLabel}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* SCROLLABLE NAVIGATION CONTENT */}
       <nav style={{ padding: '0.75rem 1rem', flex: 1, overflowY: 'auto' }}>

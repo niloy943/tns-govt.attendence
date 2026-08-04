@@ -54,7 +54,7 @@ export default function EmployeeChart() {
   const employeesByMinistry = useMemo(() => {
     if (!employees) return [];
 
-    let filtered = employees;
+    let filtered = Array.isArray(employees) ? employees : (employees.data || []);
 
     // Apply Department filter
     if (selectedDepartment !== "all") {
@@ -87,12 +87,12 @@ export default function EmployeeChart() {
     }).filter(group => group.list.length > 0);
   }, [employees, activeMinistryId, selectedDepartment, searchQuery]);
 
-  // Extract unique departments for current active filter
   const availableDepartments = useMemo(() => {
     if (!employees) return [];
+    const empList = Array.isArray(employees) ? employees : (employees.data || []);
     const source = activeMinistryId === "all" 
-      ? employees 
-      : employees.filter(e => e.ministryId === Number(activeMinistryId));
+      ? empList 
+      : empList.filter(e => e.ministryId === Number(activeMinistryId));
     const depts = new Set(source.map(e => e.department).filter(Boolean));
     return Array.from(depts);
   }, [employees, activeMinistryId]);

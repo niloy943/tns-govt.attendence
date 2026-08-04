@@ -17,7 +17,8 @@ import {
   UserPlus,
   ArrowRightLeft,
   ShieldCheck,
-  Network
+  Network,
+  LogOut
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { dummyMinistries } from '../../data/dummy/ministries';
@@ -30,7 +31,8 @@ export default function Sidebar() {
     viewLevel, 
     setCentralView, 
     setMinistryView, 
-    selectedMinistryId 
+    selectedMinistryId,
+    logout
   } = useAuth();
 
   const selectedMinistryObj = selectedMinistryId !== 'all'
@@ -80,7 +82,7 @@ export default function Sidebar() {
             { to: "/employee/dashboard", label: "Dashboard" },
             { to: "/employee/list", label: "Employee Directory" },
             { to: "/employee/create", label: "Add Employee" },
-            { to: "/employee/assignment", label: "Organizational Assignment" },
+            { to: "/employee/assignment", label: "Assignment & Mapping" },
             { to: "/employee/transfer", label: "Employee Transfer" },
             { to: "/employee/status", label: "Employee Status" },
             { to: "/employee/reports", label: "Reports" },
@@ -126,7 +128,8 @@ export default function Sidebar() {
       borderRight: '1px solid #1E293B',
       flexShrink: 0,
       position: 'sticky',
-      top: 0
+      top: 0,
+      overflow: 'hidden'
     }}>
       {/* BRAND HEADER */}
       <div style={{
@@ -160,24 +163,26 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* Role Badge */}
-      <div style={{ padding: '0.875rem 1.25rem 0.375rem 1.25rem' }}>
-        <div style={{
-          backgroundColor: '#1E293B',
-          borderRadius: '0.5rem',
-          padding: '0.4rem 0.625rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem'
-        }}>
-          <ShieldAlert size={15} style={{ color: '#60A5FA' }} />
-          <div style={{ overflow: 'hidden' }}>
-            <p style={{ fontSize: '0.775rem', fontWeight: 600, color: '#E2E8F0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {currentUser.roleLabel}
-            </p>
+      {/* Role Badge - Hidden for Super Admin */}
+      {currentUser.role !== 'super_admin' && (
+        <div style={{ padding: '0.875rem 1.25rem 0.375rem 1.25rem' }}>
+          <div style={{
+            backgroundColor: '#1E293B',
+            borderRadius: '0.5rem',
+            padding: '0.4rem 0.625rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}>
+            <ShieldAlert size={15} style={{ color: '#60A5FA' }} />
+            <div style={{ overflow: 'hidden' }}>
+              <p style={{ fontSize: '0.775rem', fontWeight: 600, color: '#E2E8F0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {currentUser.roleLabel}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* SCROLLABLE NAVIGATION CONTENT */}
       <nav style={{ padding: '0.75rem 1rem', flex: 1, overflowY: 'auto' }}>
@@ -289,6 +294,40 @@ export default function Sidebar() {
         })}
       </nav>
 
+      {/* LOGOUT BUTTON IN SIDEBAR */}
+      <div style={{ padding: '0.5rem 1rem', borderTop: '1px solid #1E293B' }}>
+        <button
+          onClick={logout}
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            padding: '0.5rem 0.625rem',
+            borderRadius: '0.375rem',
+            border: 'none',
+            fontSize: '0.8125rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            backgroundColor: 'transparent',
+            color: '#FCA5A5',
+            textAlign: 'left',
+            transition: 'all 0.15s ease'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+            e.currentTarget.style.color = '#EF4444';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.color = '#FCA5A5';
+          }}
+        >
+          <LogOut size={16} />
+          <span>Sign Out</span>
+        </button>
+      </div>
+ 
       {/* Footer Info */}
       <div style={{
         padding: '0.875rem 1.25rem',
@@ -299,8 +338,8 @@ export default function Sidebar() {
         flexDirection: 'column',
         gap: '0.125rem'
       }}>
-        <p style={{ fontWeight: 600, color: '#E2E8F0' }}>Govt HRMS Employee v3.0</p>
-        <p>Government Digital Solutions</p>
+        <p style={{ fontWeight: 600, color: '#E2E8F0' }}>People's Republic of Bangladesh</p>
+        <p>Digital Government</p>
       </div>
     </aside>
   );
