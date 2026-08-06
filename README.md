@@ -71,7 +71,7 @@ php artisan serve
 ## 3. Troubleshooting & Notes
 
 - **Autoloader Errors**: If PHP throws a `Class "Database\Seeders\X" not found` error during migration, run `composer dump-autoload` in the `backend/` folder to reload cached class paths.
-- **SQLite Database Corruption**: If you encounter `SQLSTATE[HY000]: General error: 26 file is not a database`, it means your SQLite file has bad initial characters. Recreate the empty file with:
+- **SQLite gitDatabase Corruption**: If you encounter `SQLSTATE[HY000]: General error: 26 file is not a database`, it means your SQLite file has bad initial characters. Recreate the empty file with:
   ```powershell
   Remove-Item -Path database\database.sqlite -Force
   New-Item -ItemType File -Path database\database.sqlite -Force
