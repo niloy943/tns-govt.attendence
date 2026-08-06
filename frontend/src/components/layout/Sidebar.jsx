@@ -1,48 +1,48 @@
-import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Building2, 
-  Users, 
-  CalendarCheck, 
-  FileText, 
-  Clock, 
-  BarChart3, 
+import React from "react";
+import { NavLink, useLocation } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Building2,
+  Users,
+  CalendarCheck,
+  FileText,
+  Clock,
+  BarChart3,
   Settings as SettingsIcon,
   ShieldAlert,
   ChevronRight,
   Landmark,
   Building,
   Banknote,
-  UserPlus,
-  ArrowRightLeft,
-  ShieldCheck,
-  Network,
-  LogOut
-} from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { dummyMinistries } from '../../data/dummy/ministries';
-import GovtLogo from './GovtLogo';
+  LogOut,
+} from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { useCurrentMinistry } from "../../hooks/useCurrentMinistry";
+import GovtLogo from "./GovtLogo";
 
 export default function Sidebar() {
   const location = useLocation();
-  const { 
-    currentUser, 
-    viewLevel, 
-    setCentralView, 
-    setMinistryView, 
+  const {
+    currentUser,
+    viewLevel,
+    setCentralView,
+    setMinistryView,
     selectedMinistryId,
-    logout
+    logout,
   } = useAuth();
+  const { currentMinistry } = useCurrentMinistry();
 
-  const selectedMinistryObj = selectedMinistryId !== 'all'
-    ? dummyMinistries.find(m => m.id === Number(selectedMinistryId))
-    : null;
+  const headerSubtitle = currentMinistry
+    ? currentMinistry.name
+    : "Central Secretariat";
 
-  const headerSubtitle = selectedMinistryObj ? selectedMinistryObj.name : "Central Secretariat";
-
-  const isCentralActive = location.pathname === '/' && (viewLevel === 'central' || selectedMinistryId === 'all');
-  const isMinistryActive = location.pathname === '/' && viewLevel === 'ministry' && selectedMinistryId !== 'all';
+  const isCentralActive =
+    location.pathname === "/" &&
+    (viewLevel === "central" || selectedMinistryId === "all");
+  const isMinistryActive =
+    location.pathname === "/" &&
+    viewLevel === "ministry" &&
+    selectedMinistryId !== "all";
 
   const navSections = [
     {
@@ -50,47 +50,45 @@ export default function Sidebar() {
       subtitle: "Government-wide Level",
       icon: Landmark,
       items: [
-        { 
-          to: "/", 
-          label: "Central Dashboard", 
-          icon: LayoutDashboard, 
+        {
+          to: "/",
+          label: "Central Dashboard",
+          icon: LayoutDashboard,
           isCustomActive: isCentralActive,
-          onClick: () => setCentralView() 
+          onClick: () => setCentralView(),
         },
         { to: "/ministry", label: "All Ministry", icon: Building2 },
-      ]
+      ],
     },
     {
       level: "Ministry Operations",
       subtitle: "Selected Ministry Level",
       icon: Building,
       items: [
-        { 
-          to: "/", 
-          label: "Ministry Dashboard", 
-          icon: LayoutDashboard, 
+        {
+          to: "/",
+          label: "Ministry Dashboard",
+          icon: LayoutDashboard,
           isCustomActive: isMinistryActive,
           onClick: () => {
-            const targetId = (selectedMinistryId === 'all' || !selectedMinistryId) ? (currentUser.ministryId || 1) : selectedMinistryId;
+            const targetId =
+              selectedMinistryId === "all" || !selectedMinistryId
+                ? currentUser.ministryId || 1
+                : selectedMinistryId;
             setMinistryView(targetId);
-          }
+          },
         },
         {
-          label: "Employee Directory",
+          label: "Employees",
           icon: Users,
           children: [
             { to: "/employee/dashboard", label: "Dashboard" },
-            { to: "/employee/list", label: "Employee Directory" },
+            { to: "/employee/list", label: "Employee List" },
             { to: "/employee/create", label: "Add Employee" },
-            { to: "/employee/assignment", label: "Assignment & Mapping" },
-            { to: "/employee/transfer", label: "Employee Transfer" },
-            { to: "/employee/status", label: "Employee Status" },
-            { to: "/employee/reports", label: "Reports" },
-            { to: "/employee/chart", label: "Hierarchy Chart" }
-          ]
+          ],
         },
-        { 
-          label: "Attendance", 
+        {
+          label: "Attendance",
           icon: CalendarCheck,
           children: [
             { to: "/attendance/dashboard", label: "Dashboard" },
@@ -98,85 +96,110 @@ export default function Sidebar() {
             { to: "/attendance/approval", label: "Attendance Approval" },
             { to: "/attendance/monthly", label: "Monthly Summary" },
             { to: "/attendance/devices", label: "Attendance Devices" },
-            { to: "/attendance/reports", label: "Attendance Reports" }
-          ]
+            { to: "/attendance/reports", label: "Attendance Reports" },
+          ],
         },
-        { 
-          label: "Leave Management", 
+        {
+          label: "Leave Management",
           icon: FileText,
           children: [
             { to: "/leave/apply", label: "Apply for Leave" },
-            { to: "/leave/history", label: "Leave History & Approvals" }
-          ]
+            { to: "/leave/history", label: "Leave History & Approvals" },
+          ],
         },
         { to: "/overtime", label: "Overtime Duty", icon: Clock },
         { to: "/salary", label: "Salary", icon: Banknote },
-        { to: "/settings", label: "Settings & Control", icon: SettingsIcon },
-        { to: "/reports", label: "Government Reports", icon: BarChart3 },
-      ]
-    }
+        { to: "/reports", label: "Reports", icon: BarChart3 },
+        { to: "/settings", label: "Settings", icon: SettingsIcon },
+      ],
+    },
   ];
 
   return (
-    <aside style={{
-      width: '260px',
-      backgroundColor: '#0F172A',
-      color: '#FFFFFF',
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100vh',
-      borderRight: '1px solid #1E293B',
-      flexShrink: 0,
-      position: 'sticky',
-      top: 0,
-      overflow: 'hidden'
-    }}>
-      {/* BRAND HEADER */}
-      <div style={{
-        padding: '1.25rem 1.5rem',
-        borderBottom: '1px solid #1E293B',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-        position: 'sticky',
+    <aside
+      style={{
+        width: "260px",
+        backgroundColor: "#0F172A",
+        color: "#FFFFFF",
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        borderRight: "1px solid #1E293B",
+        flexShrink: 0,
+        position: "sticky",
         top: 0,
-        backgroundColor: '#0F172A',
-        zIndex: 20
-      }}>
-        <GovtLogo style={{ width: '2.75rem', height: '2.75rem' }} />
+        overflow: "hidden",
+      }}
+    >
+      {/* BRAND HEADER */}
+      <div
+        style={{
+          padding: "1.25rem 1.5rem",
+          borderBottom: "1px solid #1E293B",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.75rem",
+          position: "sticky",
+          top: 0,
+          backgroundColor: "#0F172A",
+          zIndex: 20,
+        }}
+      >
+        <GovtLogo style={{ width: "2.75rem", height: "2.75rem" }} />
         <div>
-          <h1 style={{ fontSize: '0.8125rem', fontWeight: 700, lineHeight: 1.2, color: '#F8FAFC' }}>
+          <h1
+            style={{
+              fontSize: "0.8125rem",
+              fontWeight: 700,
+              lineHeight: 1.2,
+              color: "#F8FAFC",
+            }}
+          >
             Government of Bangladesh
           </h1>
-          <p style={{
-            fontSize: '0.725rem',
-            color: selectedMinistryObj ? '#60A5FA' : '#38BDF8',
-            fontWeight: 600,
-            marginTop: '0.2rem',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            maxWidth: '165px'
-          }} title={headerSubtitle}>
+          <p
+            style={{
+              fontSize: "0.725rem",
+              color: selectedMinistryId ? "#60A5FA" : "#38BDF8",
+              fontWeight: 600,
+              marginTop: "0.2rem",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: "165px",
+            }}
+            title={headerSubtitle}
+          >
             {headerSubtitle}
           </p>
         </div>
       </div>
 
       {/* Role Badge - Hidden for Super Admin */}
-      {currentUser.role !== 'super_admin' && (
-        <div style={{ padding: '0.875rem 1.25rem 0.375rem 1.25rem' }}>
-          <div style={{
-            backgroundColor: '#1E293B',
-            borderRadius: '0.5rem',
-            padding: '0.4rem 0.625rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}>
-            <ShieldAlert size={15} style={{ color: '#60A5FA' }} />
-            <div style={{ overflow: 'hidden' }}>
-              <p style={{ fontSize: '0.775rem', fontWeight: 600, color: '#E2E8F0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      {currentUser.role !== "super_admin" && (
+        <div style={{ padding: "0.875rem 1.25rem 0.375rem 1.25rem" }}>
+          <div
+            style={{
+              backgroundColor: "#1E293B",
+              borderRadius: "0.5rem",
+              padding: "0.4rem 0.625rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+            }}
+          >
+            <ShieldAlert size={15} style={{ color: "#60A5FA" }} />
+            <div style={{ overflow: "hidden" }}>
+              <p
+                style={{
+                  fontSize: "0.775rem",
+                  fontWeight: 600,
+                  color: "#E2E8F0",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
                 {currentUser.roleLabel}
               </p>
             </div>
@@ -185,66 +208,81 @@ export default function Sidebar() {
       )}
 
       {/* SCROLLABLE NAVIGATION CONTENT */}
-      <nav style={{ padding: '0.75rem 1rem', flex: 1, overflowY: 'auto' }}>
+      <nav style={{ padding: "0.75rem 1rem", flex: 1, overflowY: "auto" }}>
         {navSections.map((section, sIdx) => {
           const SectionIcon = section.icon;
           return (
-            <div key={sIdx} style={{ marginBottom: '1.25rem' }}>
+            <div key={sIdx} style={{ marginBottom: "1.25rem" }}>
               {/* Section Header */}
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.375rem 0.5rem',
-                marginBottom: '0.375rem',
-                borderBottom: '1px solid rgba(255,255,255,0.05)'
-              }}>
-                <SectionIcon size={14} style={{ color: '#60A5FA' }} />
-                <span style={{
-                  fontSize: '0.725rem',
-                  fontWeight: 700,
-                  color: '#94A3B8',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em'
-                }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  padding: "0.375rem 0.5rem",
+                  marginBottom: "0.375rem",
+                  borderBottom: "1px solid rgba(255,255,255,0.05)",
+                }}
+              >
+                <SectionIcon size={14} style={{ color: "#60A5FA" }} />
+                <span
+                  style={{
+                    fontSize: "0.725rem",
+                    fontWeight: 700,
+                    color: "#94A3B8",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                  }}
+                >
                   {section.level}
                 </span>
               </div>
 
               {/* Nav Items */}
-              <ul style={{ listStyle: 'none', paddingLeft: '0.25rem' }}>
+              <ul style={{ listStyle: "none", paddingLeft: "0.25rem" }}>
                 {section.items.map((item, index) => {
                   const Icon = item.icon;
                   if (item.children) {
                     return (
-                      <li key={index} style={{ marginBottom: '0.375rem' }}>
-                        <div style={{
-                          padding: '0.5rem 0.625rem',
-                          fontSize: '0.8125rem',
-                          fontWeight: 600,
-                          color: '#CBD5E1',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem'
-                        }}>
-                          <Icon size={16} style={{ color: '#94A3B8' }} />
+                      <li key={index} style={{ marginBottom: "0.375rem" }}>
+                        <div
+                          style={{
+                            padding: "0.5rem 0.625rem",
+                            fontSize: "0.8125rem",
+                            fontWeight: 600,
+                            color: "#CBD5E1",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                          }}
+                        >
+                          <Icon size={16} style={{ color: "#94A3B8" }} />
                           <span>{item.label}</span>
                         </div>
-                        <ul style={{ listStyle: 'none', paddingLeft: '1.5rem', marginTop: '0.125rem', borderLeft: '1px solid rgba(255,255,255,0.1)' }}>
+                        <ul
+                          style={{
+                            listStyle: "none",
+                            paddingLeft: "1.5rem",
+                            marginTop: "0.125rem",
+                            borderLeft: "1px solid rgba(255,255,255,0.1)",
+                          }}
+                        >
                           {item.children.map((child, cIdx) => (
-                            <li key={cIdx} style={{ marginBottom: '0.2rem' }}>
+                            <li key={cIdx} style={{ marginBottom: "0.2rem" }}>
                               <NavLink
                                 to={child.to}
                                 style={({ isActive }) => ({
-                                  display: 'block',
-                                  padding: '0.375rem 0.625rem',
-                                  borderRadius: '0.375rem',
-                                  fontSize: '0.775rem',
-                                  textDecoration: 'none',
-                                  color: isActive ? '#FFFFFF' : '#94A3B8',
-                                  backgroundColor: isActive ? 'var(--primary)' : 'transparent',
+                                  display: "block",
+                                  padding: "0.375rem 0.625rem",
+                                  borderRadius: "0.375rem",
+                                  fontSize: "0.775rem",
+                                  textDecoration: "none",
+                                  color: isActive ? "#FFFFFF" : "#94A3B8",
+                                  backgroundColor: isActive
+                                    ? "var(--primary)"
+                                    : "transparent",
                                   fontWeight: isActive ? 600 : 400,
-                                  transition: 'all 0.15s ease-in-out'
+                                  transition: "all 0.15s ease-in-out",
                                 })}
                               >
                                 {child.label}
@@ -256,30 +294,39 @@ export default function Sidebar() {
                     );
                   }
 
-                  const isItemActive = item.isCustomActive !== undefined 
-                    ? item.isCustomActive 
-                    : location.pathname === item.to;
+                  const isItemActive =
+                    item.isCustomActive !== undefined
+                      ? item.isCustomActive
+                      : location.pathname === item.to;
 
                   return (
-                    <li key={index} style={{ marginBottom: '0.25rem' }}>
+                    <li key={index} style={{ marginBottom: "0.25rem" }}>
                       <NavLink
                         to={item.to}
                         onClick={item.onClick}
                         style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '0.45rem 0.625rem',
-                          borderRadius: '0.375rem',
-                          fontSize: '0.8125rem',
-                          textDecoration: 'none',
-                          color: isItemActive ? '#FFFFFF' : '#CBD5E1',
-                          backgroundColor: isItemActive ? 'var(--primary)' : 'transparent',
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          padding: "0.45rem 0.625rem",
+                          borderRadius: "0.375rem",
+                          fontSize: "0.8125rem",
+                          textDecoration: "none",
+                          color: isItemActive ? "#FFFFFF" : "#CBD5E1",
+                          backgroundColor: isItemActive
+                            ? "var(--primary)"
+                            : "transparent",
                           fontWeight: isItemActive ? 600 : 500,
-                          transition: 'all 0.15s ease-in-out'
+                          transition: "all 0.15s ease-in-out",
                         }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                          }}
+                        >
                           <Icon size={16} />
                           <span>{item.label}</span>
                         </div>
@@ -295,50 +342,54 @@ export default function Sidebar() {
       </nav>
 
       {/* LOGOUT BUTTON IN SIDEBAR */}
-      <div style={{ padding: '0.5rem 1rem', borderTop: '1px solid #1E293B' }}>
+      <div style={{ padding: "0.5rem 1rem", borderTop: "1px solid #1E293B" }}>
         <button
           onClick={logout}
           style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.5rem 0.625rem',
-            borderRadius: '0.375rem',
-            border: 'none',
-            fontSize: '0.8125rem',
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            padding: "0.5rem 0.625rem",
+            borderRadius: "0.375rem",
+            border: "none",
+            fontSize: "0.8125rem",
             fontWeight: 600,
-            cursor: 'pointer',
-            backgroundColor: 'transparent',
-            color: '#FCA5A5',
-            textAlign: 'left',
-            transition: 'all 0.15s ease'
+            cursor: "pointer",
+            backgroundColor: "transparent",
+            color: "#FCA5A5",
+            textAlign: "left",
+            transition: "all 0.15s ease",
           }}
           onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
-            e.currentTarget.style.color = '#EF4444';
+            e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.1)";
+            e.currentTarget.style.color = "#EF4444";
           }}
           onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.color = '#FCA5A5';
+            e.currentTarget.style.backgroundColor = "transparent";
+            e.currentTarget.style.color = "#FCA5A5";
           }}
         >
           <LogOut size={16} />
           <span>Sign Out</span>
         </button>
       </div>
- 
+
       {/* Footer Info */}
-      <div style={{
-        padding: '0.875rem 1.25rem',
-        borderTop: '1px solid #1E293B',
-        fontSize: '0.725rem',
-        color: '#94A3B8',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.125rem'
-      }}>
-        <p style={{ fontWeight: 600, color: '#E2E8F0' }}>People's Republic of Bangladesh</p>
+      <div
+        style={{
+          padding: "0.875rem 1.25rem",
+          borderTop: "1px solid #1E293B",
+          fontSize: "0.725rem",
+          color: "#94A3B8",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.125rem",
+        }}
+      >
+        <p style={{ fontWeight: 600, color: "#E2E8F0" }}>
+          People's Republic of Bangladesh
+        </p>
         <p>Digital Government</p>
       </div>
     </aside>

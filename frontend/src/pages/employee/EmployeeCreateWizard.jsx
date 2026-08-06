@@ -122,10 +122,10 @@ export default function EmployeeCreateWizard() {
       }}>
         <div>
           <h1 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: '#F8FAFC' }}>
-            Add New Employee Wizard
+            Add New Employee 
           </h1>
           <p style={{ fontSize: '0.8125rem', color: '#94A3B8', margin: '0.15rem 0 0 0' }}>
-            Structured 6-step registration for Bangladesh Government Officers
+            Bangladesh Government Officers
           </p>
         </div>
         <button onClick={() => navigate('/employee/list')} className="btn btn-secondary" style={{ fontSize: '0.8125rem' }}>

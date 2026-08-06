@@ -90,7 +90,8 @@ export default function Leave({ initialTab = 'apply' }) {
     });
   };
 
-  const filteredRequests = (leaveRequests || []).filter(r => {
+  const safeLeaveRequests = Array.isArray(leaveRequests) ? leaveRequests : (leaveRequests?.data || []);
+  const filteredRequests = safeLeaveRequests.filter(r => {
     if (filterCategory === 'ALL') return true;
     return r.category === filterCategory;
   });

@@ -1,30 +1,36 @@
-import { apiClient } from '../client';
-import { employeeService } from '../../services/employeeService';
+import { apiClient } from "../client";
 
+// GET /api/employees
 export async function fetchEmployees(params) {
-  return await employeeService.getEmployees(params);
+  const data = await apiClient("/employees", { params });
+  return Array.isArray(data) ? data : data?.data || [];
 }
 
+export async function fetchHierarchy(params) {
+  return await apiClient("/employees/hierarchy", { params });
+}
+
+// GET /api/employees/:id
 export async function fetchEmployeeById(id) {
-  return await employeeService.getEmployeeById(id);
+  return await apiClient(`/employees/${id}`);
 }
 
+// POST /api/employees
 export async function createEmployee(payload) {
-  return await employeeService.createEmployee(payload);
+  return await apiClient("/employees", { body: payload });
 }
 
+// PUT /api/employees/:id
 export async function updateEmployee(id, payload) {
-  return await employeeService.updateEmployee(id, payload);
+  return await apiClient(`/employees/${id}`, { method: "PUT", body: payload });
 }
 
-export async function importGovtEmployees(records) {
-  return await employeeService.importGovtEmployees(records);
+// GET /api/employees/hierarchy
+export async function fetchEmployeeHierarchy(params) {
+  return await apiClient("/employees/hierarchy", { params });
 }
 
-export async function transferEmployee(transferData) {
-  return await employeeService.transferEmployee(transferData);
-}
-
-export async function fetchTransferHistory() {
-  return await employeeService.getTransferHistory();
+// GET /api/employees/:id/audit-trail
+export async function fetchEmployeeAuditTrail(id) {
+  return await apiClient(`/employees/${id}/audit-trail`);
 }

@@ -22,7 +22,7 @@ import { useLeaveRequests } from '../hooks/useLeave';
 import { useAttendanceSummary } from '../hooks/useAttendance';
 import StatusBadge from '../components/shared/StatusBadge';
 import { useAuth } from '../context/AuthContext';
-import { dummyMinistries } from '../data/dummy/ministries';
+import { useCurrentMinistry } from '../hooks/useCurrentMinistry';
 
 export default function Dashboard() {
   const { 
@@ -37,8 +37,9 @@ export default function Dashboard() {
   const { data: ministries } = useMinistries();
   const { data: leaveRequests } = useLeaveRequests();
   const { data: attendanceSummary } = useAttendanceSummary();
+  const { currentMinistry, ministries: ministryList, getMinistryById } = useCurrentMinistry();
 
-  const selectedMinistryObj = dummyMinistries.find(m => m.id === Number(selectedMinistryId)) || dummyMinistries[0];
+  const selectedMinistryObj = currentMinistry || (ministryList[0] ?? {});
 
   const mockDepartments = [
     { id: 1, name: "HR & Admin", totalEmployees: 18, presentCount: 15, percent: 83, color: "#10B981" },
@@ -195,7 +196,7 @@ export default function Dashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {dummyMinistries.map((m) => (
+                  {ministryList.map((m) => (
                     <tr key={m.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
                       <td style={{ padding: '0.875rem 1rem', fontWeight: 600 }}>{m.name}</td>
                       <td style={{ padding: '0.875rem 1rem', color: '#64748B' }}>{m.code}</td>

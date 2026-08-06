@@ -68,7 +68,6 @@ php artisan serve
 - **Ministry Admin**: `admin.mof@tns.gov.bd` (Ministry of Finance Branch Manager)
 
 ---
-
 ## 3. Troubleshooting & Notes
 
 - **Autoloader Errors**: If PHP throws a `Class "Database\Seeders\X" not found` error during migration, run `composer dump-autoload` in the `backend/` folder to reload cached class paths.
