@@ -95,19 +95,34 @@ export function AuthProvider({ children }) {
       }
       throw new Error("The provided credentials are incorrect.");
     } else {
-      const response = await loginUser(email, password);
-      const { token, user } = response;
-      
-      const mappedUser = {
-        ...user,
-        roleLabel: user.role === 'super_admin' ? 'Super Admin' : user.role === 'ministry_admin' ? 'Ministry Branch Manager' : 'Government Officer',
-        avatar: user.avatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80"
-      };
+      try {
+        const response = await loginUser(email, password);
+        const { token, user } = response;
+        
+        const mappedUser = {
+          ...user,
+          roleLabel: user.role === 'super_admin' ? 'Super Admin' : user.role === 'ministry_admin' ? 'Ministry Branch Manager' : 'Government Officer',
+          avatar: user.avatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80"
+        };
 
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(mappedUser));
-      setCurrentUser(mappedUser);
-      return mappedUser;
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(mappedUser));
+        setCurrentUser(mappedUser);
+        return mappedUser;
+      } catch (err) {
+        // Automatically fallback to mock login if backend server is unreachable
+        if (err.message.includes('Failed to fetch') || err.message.includes('Failed') || err.message.includes('NetworkError')) {
+          console.warn("API server is offline. Falling back to local Mock Mode authentication.");
+          const user = mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+          if (user && password === 'password') {
+            setCurrentUser(user);
+            localStorage.setItem('token', 'dummy-gov-jwt-token');
+            localStorage.setItem('user', JSON.stringify(user));
+            return user;
+          }
+        }
+        throw err;
+      }
     }
   };
 

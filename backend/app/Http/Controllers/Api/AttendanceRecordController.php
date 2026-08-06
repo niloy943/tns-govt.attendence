@@ -55,17 +55,15 @@ class AttendanceRecordController extends Controller
     /** Monthly Summary: per-employee present/absent/late counts for a ministry + month. */
     public function monthlySummary(Request $request)
     {
-        $data = $request->validate([
-            'ministry_id' => ['required', 'exists:ministries,id'],
-            'month' => ['required', 'integer', 'min:1', 'max:12'],
-            'year' => ['required', 'integer', 'min:2000'],
-        ]);
+        $ministryId = $request->query('ministry_id');
+        $month = $request->integer('month', date('n'));
+        $year = $request->integer('year', date('Y'));
 
         $summary = AttendanceRecord::query()
             ->join('employees', 'employees.id', '=', 'attendance_records.employee_id')
-            ->where('employees.ministry_id', $data['ministry_id'])
-            ->whereYear('attendance_date', $data['year'])
-            ->whereMonth('attendance_date', $data['month'])
+            ->when($ministryId, fn ($q) => $q->where('employees.ministry_id', $ministryId))
+            ->whereYear('attendance_date', $year)
+            ->whereMonth('attendance_date', $month)
             ->select('employees.id as employee_id', 'employees.name')
             ->selectRaw('count(*) as days_recorded')
             ->selectRaw('sum(case when check_in_time is not null then 1 else 0 end) as days_present')

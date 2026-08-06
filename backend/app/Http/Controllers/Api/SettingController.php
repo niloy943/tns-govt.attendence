@@ -33,4 +33,38 @@ class SettingController extends Controller
 
         return response()->json($setting);
     }
+
+    public function getSalarySettings(Request $request)
+    {
+        $settings = Setting::query()->where('group', 'salary')->pluck('value', 'key');
+        
+        $default = [
+            'id' => 1,
+            'workingDays' => 26,
+            'salaryPolicy' => 'working_days',
+            'halfDayRule' => '50_percent',
+            'latePolicy' => 'deduct_after_3',
+            'pfPercentage' => 10,
+            'taxPercentage' => 5,
+            'warningPercentage' => 90,
+            'criticalPercentage' => 100,
+            'currency' => 'BDT',
+            'payrollDate' => 25,
+            'lockDate' => 30,
+            'autoLock' => true,
+        ];
+
+        return response()->json(array_merge($default, $settings->toArray()));
+    }
+
+    public function updateSalarySettings(Request $request)
+    {
+        $this->authorize('create', \App\Models\Ministry::class);
+
+        foreach ($request->all() as $key => $val) {
+            Setting::setValue('salary', $key, $val);
+        }
+
+        return $this->getSalarySettings($request);
+    }
 }

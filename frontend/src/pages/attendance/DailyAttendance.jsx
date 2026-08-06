@@ -40,7 +40,7 @@ export default function DailyAttendance() {
   const [logs, setLogs] = useState([]);
 
   React.useEffect(() => {
-    if (initialList) setLogs(initialList);
+    if (initialList) setLogs(Array.isArray(initialList) ? initialList : (initialList.data || []));
   }, [initialList]);
 
   // Drawer State

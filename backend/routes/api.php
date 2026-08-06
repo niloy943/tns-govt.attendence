@@ -39,14 +39,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/ministries/{ministry}/department-wings/{wing}', [DepartmentWingController::class, 'destroy']);
 
     // Employees
-    Route::get('/employees/hierarchy', [EmployeeController::class, 'hierarchy']);
     Route::apiResource('employees', EmployeeController::class);
-    Route::get('/employees/{employee}/audit-trail', [EmployeeController::class, 'auditTrail']);
 
     // Attendance
     Route::get('/attendance/devices', [AttendanceDeviceController::class, 'index']);
     Route::get('/attendance', [AttendanceRecordController::class, 'index']);
     Route::get('/attendance/sheet', [AttendanceRecordController::class, 'sheet']);
+    Route::get('/attendance/summary', [AttendanceRecordController::class, 'monthlySummary']);
     Route::get('/attendance/monthly-summary', [AttendanceRecordController::class, 'monthlySummary']);
     Route::get('/attendance/individual/{employeeId}', [AttendanceRecordController::class, 'individual']);
     Route::post('/attendance', [AttendanceRecordController::class, 'store']);
@@ -80,6 +79,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Settings (read: any role; write: super_admin, gated in controller)
     Route::get('/settings', [SettingController::class, 'index']);
     Route::put('/settings', [SettingController::class, 'update']);
+    Route::get('/salary/settings', [SettingController::class, 'getSalarySettings']);
+    Route::put('/salary/settings', [SettingController::class, 'updateSalarySettings']);
 
     // --- Ministry Admin + Super Admin only ---
     Route::middleware('role:super_admin,ministry_admin')->group(function () {

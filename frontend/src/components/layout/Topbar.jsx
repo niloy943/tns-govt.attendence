@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search, Bell, Landmark, Building, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { dummyMinistries } from '../../data/dummy/ministries';
+import { useCurrentMinistry } from '../../hooks/useCurrentMinistry';
 
 export default function Topbar() {
   const { 
@@ -14,6 +14,7 @@ export default function Topbar() {
     selectMinistry,
     logout
   } = useAuth();
+  const { ministries } = useCurrentMinistry();
 
   const [showNotifications, setShowNotifications] = React.useState(false);
   const [unreadCount, setUnreadCount] = React.useState(3);
@@ -108,7 +109,7 @@ export default function Topbar() {
             }}
           >
             <option value="all">Central Dashboard (All Ministries)</option>
-            {dummyMinistries.map((m) => (
+            {ministries.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.name}
               </option>

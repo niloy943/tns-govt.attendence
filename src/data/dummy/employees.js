@@ -35,7 +35,8 @@ export const dummyEmployees = [
     role: "Ministry Admin",
     createdBy: "Super Admin (System)",
     updatedBy: "Super Admin (System)",
-    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80"
+    avatar:
+      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
   },
   {
     id: 2,
@@ -73,7 +74,8 @@ export const dummyEmployees = [
     role: "Department Head",
     createdBy: "Shaila Sharmin Zaman",
     updatedBy: "Super Admin",
-    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80"
+    avatar:
+      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80",
   },
   {
     id: 3,
@@ -111,7 +113,8 @@ export const dummyEmployees = [
     role: "Officer",
     createdBy: "Super Admin",
     updatedBy: "Super Admin",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80"
+    avatar:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80",
   },
   {
     id: 4,
@@ -149,7 +152,8 @@ export const dummyEmployees = [
     role: "Officer",
     createdBy: "Naima Hossain",
     updatedBy: "Naima Hossain",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80"
+    avatar:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
   },
   {
     id: 5,
@@ -187,7 +191,8 @@ export const dummyEmployees = [
     role: "Officer",
     createdBy: "Super Admin",
     updatedBy: "Super Admin",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
+    avatar:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
   },
   {
     id: 6,
@@ -225,7 +230,8 @@ export const dummyEmployees = [
     role: "Officer",
     createdBy: "Super Admin",
     updatedBy: "Super Admin",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80"
+    avatar:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
   },
   {
     id: 7,
@@ -263,7 +269,8 @@ export const dummyEmployees = [
     role: "Officer",
     createdBy: "Super Admin",
     updatedBy: "Super Admin",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80"
+    avatar:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
   },
   {
     id: 8,
@@ -301,7 +308,8 @@ export const dummyEmployees = [
     role: "Officer",
     createdBy: "Super Admin",
     updatedBy: "Super Admin",
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80"
+    avatar:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80",
   },
   {
     id: 9,
@@ -339,7 +347,8 @@ export const dummyEmployees = [
     role: "Officer",
     createdBy: "Super Admin",
     updatedBy: "Super Admin",
-    avatar: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=150&auto=format&fit=crop&q=80"
+    avatar:
+      "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=150&auto=format&fit=crop&q=80",
   },
   {
     id: 11,
@@ -377,7 +386,8 @@ export const dummyEmployees = [
     role: "Ministry Admin",
     createdBy: "Super Admin (System)",
     updatedBy: "Super Admin (System)",
-    avatar: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=150&auto=format&fit=crop&q=80"
+    avatar:
+      "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=150&auto=format&fit=crop&q=80",
   },
   {
     id: 12,
@@ -415,49 +425,34 @@ export const dummyEmployees = [
     role: "Officer",
     createdBy: "Super Admin",
     updatedBy: "Super Admin",
-    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80"
-  }
-];
-
-export const dummyTransferHistory = [
-  {
-    id: 1,
-    employeeId: 4,
-    employeeCode: "EMP-1004",
-    employeeName: "Al Noman",
-    designation: "Deputy Director (Magistrate)",
-    fromMinistry: "Ministry of Social Welfare",
-    toMinistry: "Ministry of Women and Children Affairs",
-    fromDepartment: "Social Services Wing",
-    toDepartment: "Women Support Program",
-    fromWing: "Legal Services",
-    toWing: "Support & Rehabilitation Wing",
-    transferDate: "2026-06-15",
-    reason: "Administrative Reorganization & Deputation Order #4029",
-    approvedBy: "Additional Secretary (Admin)",
-    status: "Approved"
+    avatar:
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80",
   },
-  {
-    id: 2,
-    employeeId: 6,
-    employeeCode: "EMP-1006",
-    employeeName: "Md. Moheuddin Ahmed",
-    designation: "Deputy Director (Planning)",
-    fromMinistry: "Ministry of Women and Children Affairs",
-    toMinistry: "Ministry of Women and Children Affairs",
-    fromDepartment: "Admin Wing",
-    toDepartment: "Planning & Evaluation Wing",
-    fromWing: "Admin-01",
-    toWing: "Planning Wing",
-    transferDate: "2026-07-01",
-    reason: "Promotion and Departmental Reassignment",
-    approvedBy: "Joint Secretary (Planning)",
-    status: "Approved"
-  }
 ];
 
 export const dummyVacantPosts = [
-  { id: 1, ministryName: "Ministry of Social Welfare", department: "Social Services Wing", designation: "Assistant Director (Field)", grade: "Grade 9", vacantCount: 4 },
-  { id: 2, ministryName: "Ministry of Women and Children Affairs", department: "Legal Affairs Wing", designation: "Legal Officer", grade: "Grade 5", vacantCount: 2 },
-  { id: 3, ministryName: "Ministry of Information & Broadcasting", department: "Press Information Wing", designation: "Senior Information Officer", grade: "Grade 4", vacantCount: 1 }
+  {
+    id: 1,
+    ministryName: "Ministry of Social Welfare",
+    department: "Social Services Wing",
+    designation: "Assistant Director (Field)",
+    grade: "Grade 9",
+    vacantCount: 4,
+  },
+  {
+    id: 2,
+    ministryName: "Ministry of Women and Children Affairs",
+    department: "Legal Affairs Wing",
+    designation: "Legal Officer",
+    grade: "Grade 5",
+    vacantCount: 2,
+  },
+  {
+    id: 3,
+    ministryName: "Ministry of Information & Broadcasting",
+    department: "Press Information Wing",
+    designation: "Senior Information Officer",
+    grade: "Grade 4",
+    vacantCount: 1,
+  },
 ];

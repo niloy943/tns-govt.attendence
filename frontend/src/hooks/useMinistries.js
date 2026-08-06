@@ -7,9 +7,11 @@ const USE_DUMMY = import.meta.env.VITE_USE_DUMMY_DATA === "true";
 export function useMinistries() {
   return useQuery({
     queryKey: ["ministries"],
-    queryFn: USE_DUMMY
-      ? () => Promise.resolve([...dummyMinistries])
-      : fetchMinistries,
+    queryFn: async () => {
+      if (USE_DUMMY) return [...dummyMinistries];
+      const res = await fetchMinistries();
+      return Array.isArray(res) ? res : (res?.data || []);
+    },
     staleTime: 1000 * 60 * 5, // 5 mins
   });
 }

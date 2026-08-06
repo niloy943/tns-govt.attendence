@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\AuditLog;
 use App\Models\Employee;
 use App\Services\AuditLogger;
 use Illuminate\Http\Request;
@@ -72,36 +71,6 @@ class EmployeeController extends Controller
         AuditLogger::log($employee, 'deleted');
 
         return response()->json(['message' => 'Employee deleted.']);
-    }
-
-    /** Hierarchy chart data: employees with manager/subordinate links, searchable by name/designation. */
-    public function hierarchy(Request $request)
-    {
-        $user = $request->user();
-
-        $employees = Employee::select('id', 'name', 'designation', 'level', 'reports_to', 'ministry_id')
-            ->when(! $user->isSuperAdmin(), fn ($q) => $q->where('ministry_id', $user->ministry_id))
-            ->when($request->query('search'), fn ($q, $s) => $q->where(function ($qq) use ($s) {
-                $qq->where('name', 'like', "%{$s}%")->orWhere('designation', 'like', "%{$s}%");
-            }))
-            ->orderBy('level')
-            ->get();
-
-        return response()->json($employees);
-    }
-
-    /** Per-record audit trail panel. */
-    public function auditTrail(Employee $employee)
-    {
-        $this->authorize('view', $employee);
-
-        $logs = AuditLog::where('auditable_type', Employee::class)
-            ->where('auditable_id', $employee->id)
-            ->with('user:id,name')
-            ->latest('created_at')
-            ->get();
-
-        return response()->json($logs);
     }
 
     private function validated(Request $request, ?int $ignoreId = null): array

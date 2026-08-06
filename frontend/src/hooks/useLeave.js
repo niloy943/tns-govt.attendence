@@ -7,9 +7,11 @@ const USE_DUMMY = import.meta.env.VITE_USE_DUMMY_DATA === "true";
 export function useLeaveRequests() {
   return useQuery({
     queryKey: ["leaveRequests"],
-    queryFn: USE_DUMMY
-      ? () => Promise.resolve([...dummyLeaveRequests])
-      : fetchLeaveRequests,
+    queryFn: async () => {
+      if (USE_DUMMY) return [...dummyLeaveRequests];
+      const res = await fetchLeaveRequests();
+      return Array.isArray(res) ? res : (res?.data || []);
+    },
     staleTime: 1000 * 60 * 5,
   });
 }

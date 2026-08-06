@@ -43,10 +43,10 @@ export default function Settings() {
             <input
               type="text"
               className="form-input"
-              value={formData.officialWorkingHours.start}
+              value={formData?.officialWorkingHours?.start || '09:00 AM'}
               onChange={e => setFormData({
                 ...formData,
-                officialWorkingHours: { ...formData.officialWorkingHours, start: e.target.value }
+                officialWorkingHours: { ...(formData?.officialWorkingHours || {}), start: e.target.value }
               })}
             />
           </div>
@@ -55,10 +55,10 @@ export default function Settings() {
             <input
               type="text"
               className="form-input"
-              value={formData.officialWorkingHours.end}
+              value={formData?.officialWorkingHours?.end || '05:00 PM'}
               onChange={e => setFormData({
                 ...formData,
-                officialWorkingHours: { ...formData.officialWorkingHours, end: e.target.value }
+                officialWorkingHours: { ...(formData?.officialWorkingHours || {}), end: e.target.value }
               })}
             />
           </div>
@@ -74,10 +74,10 @@ export default function Settings() {
             <input
               type="number"
               className="form-input"
-              value={formData.leaveRules.maxCasualDaysPerYear}
+              value={formData?.leaveRules?.maxCasualDaysPerYear || 14}
               onChange={e => setFormData({
                 ...formData,
-                leaveRules: { ...formData.leaveRules, maxCasualDaysPerYear: Number(e.target.value) }
+                leaveRules: { ...(formData?.leaveRules || {}), maxCasualDaysPerYear: Number(e.target.value) }
               })}
             />
           </div>
@@ -86,10 +86,10 @@ export default function Settings() {
             <input
               type="number"
               className="form-input"
-              value={formData.leaveRules.maxRotationalDaysPerShift}
+              value={formData?.leaveRules?.maxRotationalDaysPerShift || 21}
               onChange={e => setFormData({
                 ...formData,
-                leaveRules: { ...formData.leaveRules, maxRotationalDaysPerShift: Number(e.target.value) }
+                leaveRules: { ...(formData?.leaveRules || {}), maxRotationalDaysPerShift: Number(e.target.value) }
               })}
             />
           </div>
