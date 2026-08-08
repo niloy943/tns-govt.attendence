@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\LeaveRequestController;
 use App\Http\Controllers\Api\LeaveTypeController;
 use App\Http\Controllers\Api\MinistryController;
+use App\Http\Controllers\Api\OfficerController;
 use App\Http\Controllers\Api\OvertimeController;
 use App\Http\Controllers\Api\PayrollController;
 use App\Http\Controllers\Api\PayrollRuleController;
@@ -26,6 +27,10 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
+
+    // Dedicated Officer Endpoints
+    Route::get('/officers/mowca', [OfficerController::class, 'mowca']);
+    Route::get('/officers/msw', [OfficerController::class, 'msw']);
 
     // Dashboard
     Route::get('/dashboard/central', [DashboardController::class, 'central']);
