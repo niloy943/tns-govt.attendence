@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Lock, ArrowRight, ArrowLeft, AlertCircle } from 'lucide-react';
 import GovtLogo from '../components/layout/GovtLogo';
@@ -19,6 +20,7 @@ const googleAccounts = [
 ];
 
 export default function Login() {
+  const navigate = useNavigate();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -44,6 +46,9 @@ export default function Login() {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    // Clear any stale auth data before attempting login
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setError('');
     if (!password) {
       setError('Please enter your password.');
@@ -53,6 +58,7 @@ export default function Login() {
     setLoading(true);
     try {
       await login(email, password);
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Login failed. Please check your credentials.');
       setLoading(false);
@@ -63,16 +69,19 @@ export default function Login() {
     setGoogleModalOpen(false);
     setError('');
     
-    // Visually fill up the inputs with the decrypted Google credentials
+    // Fill inputs and clear any old auth data
     setEmail(selectedEmail);
     setPassword('password');
     setStep('password');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     
     // Add a slight delay (500ms) for visual effect so the user sees the fields populated
     setLoading(true);
     setTimeout(async () => {
       try {
         await login(selectedEmail, 'password');
+        navigate('/dashboard');
       } catch (err) {
         setError(err.message || 'Google authentication failed.');
         setLoading(false);

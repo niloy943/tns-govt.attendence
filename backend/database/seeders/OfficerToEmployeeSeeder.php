@@ -78,7 +78,7 @@ class OfficerToEmployeeSeeder extends Seeder
             );
         }
 
-        $code = ! empty($off->officer_id) 
+        $code = ! empty($off->officer_id)
             ? "{$prefix}-" . str_pad($off->officer_id, 4, '0', STR_PAD_LEFT)
             : "{$prefix}-" . str_pad($off->id, 4, '0', STR_PAD_LEFT);
 

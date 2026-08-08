@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7235d32 (login)
 <?php
 
 namespace App\Models;

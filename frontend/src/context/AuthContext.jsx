@@ -41,48 +41,35 @@ export const mockUsers = [
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+  // Clear any persisted authentication data on app start and optionally
+  // restore a dummy‑mode session. All of this runs once when the provider mounts.
+  useEffect(() => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
+    const storedToken = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+
+    if (storedToken && USE_DUMMY) {
+      if (storedUser) {
+        try {
+          setCurrentUser(JSON.parse(storedUser));
+        } catch (_) {
+          localStorage.removeItem('user');
+        }
+      }
+    }
+
+    // Finish loading after the housekeeping
+    setLoading(false);
+  }, []);
+
+
   // 2-tier view state: 'central' | 'ministry'
   const [viewLevel, setViewLevel] = useState('central');
   const [selectedMinistryId, setSelectedMinistryId] = useState("all");
 
-  // Restore session on load
-  useEffect(() => {
-    async function restoreSession() {
-      const storedToken = localStorage.getItem('token');
-      const storedUser = localStorage.getItem('user');
 
-      if (storedToken) {
-        if (USE_DUMMY) {
-          if (storedUser) {
-            try {
-              setCurrentUser(JSON.parse(storedUser));
-            } catch (e) {
-              localStorage.removeItem('user');
-            }
-          }
-        } else {
-          try {
-            const user = await getMe();
-            // Transform backend role to match frontend expectations
-            const mappedUser = {
-              ...user,
-              roleLabel: user.role === 'super_admin' ? 'Super Admin' : user.role === 'ministry_admin' ? 'Ministry Branch Manager' : 'Government Officer',
-              avatar: user.avatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80"
-            };
-            setCurrentUser(mappedUser);
-            localStorage.setItem('user', JSON.stringify(mappedUser));
-          } catch (error) {
-            console.error("Failed to restore backend session:", error);
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-          }
-        }
-      }
-      setLoading(false);
-    }
-    restoreSession();
-  }, []);
 
   const login = async (email, password) => {
     if (USE_DUMMY) {
@@ -98,7 +85,7 @@ export function AuthProvider({ children }) {
       try {
         const response = await loginUser(email, password);
         const { token, user } = response;
-        
+
         const mappedUser = {
           ...user,
           roleLabel: user.role === 'super_admin' ? 'Super Admin' : user.role === 'ministry_admin' ? 'Ministry Branch Manager' : 'Government Officer',
@@ -110,7 +97,7 @@ export function AuthProvider({ children }) {
         setCurrentUser(mappedUser);
         return mappedUser;
       } catch (err) {
-        // Automatically fallback to mock login if backend server is unreachable
+        // Falling back to mock login if backend server is unreachable
         if (err.message.includes('Failed to fetch') || err.message.includes('Failed') || err.message.includes('NetworkError')) {
           console.warn("API server is offline. Falling back to local Mock Mode authentication.");
           const user = mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
